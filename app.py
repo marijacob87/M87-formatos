@@ -15,17 +15,31 @@ st.title("Calculadora de formatos")
 # PAINEL VISUAL
 # ==================================================
 
-col1, col2 = st.columns(2)
+linha1_col1, linha1_col2 = st.columns(2)
 
-with col1:
-    papel_largura = st.number_input("Largura do papel (mm)", value=450, min_value=1)
-    peca_largura = st.number_input("Largura da peça (mm)", value=90, min_value=1)
-    espaco = st.number_input("Espaço entre peças (mm)", value=5, min_value=0)
+with linha1_col1:
+    papel_largura = st.number_input("Largura do papel (mm)", value=450, min_value=1, key="papel_largura")
 
-with col2:
-    papel_altura = st.number_input("Altura do papel (mm)", value=320, min_value=1)
-    peca_altura = st.number_input("Altura da peça (mm)", value=50, min_value=1)
-    margem = st.number_input("Margem de segurança (mm)", value=5, min_value=0)
+with linha1_col2:
+    papel_altura = st.number_input("Altura do papel (mm)", value=320, min_value=1, key="papel_altura")
+
+
+linha2_col1, linha2_col2 = st.columns(2)
+
+with linha2_col1:
+    peca_largura = st.number_input("Largura da peça (mm)", value=90, min_value=1, key="peca_largura")
+
+with linha2_col2:
+    peca_altura = st.number_input("Altura da peça (mm)", value=50, min_value=1, key="peca_altura")
+
+
+linha3_col1, linha3_col2 = st.columns(2)
+
+with linha3_col1:
+    espaco = st.number_input("Espaço entre peças (mm)", value=5, min_value=0, key="espaco")
+
+with linha3_col2:
+    margem = st.number_input("Margem de segurança (mm)", value=5, min_value=0, key="margem")
 
 
 # ==================================================
