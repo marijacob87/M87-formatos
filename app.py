@@ -1,32 +1,95 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import math
 
 
 st.set_page_config(
     page_title="M87 • Calculadora de Formatos",
     layout="centered"
 )
-
 st.markdown(
     """
     <div style="
-        position: fixed;
-        top: 70px;
-        left: 18px;
-        z-index: 9999;
-        font-size: 12px;
-        color: #FFFFFF;
-        font-weight: 600;
-        letter-spacing: 1px;
+        text-align: center;
+        color: #C98A1A;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-top: 0px;
+        margin-bottom: 12px;
     ">
-        By @M87 • TOOLS
+        BY @M87 • TOOLS
     </div>
     """,
     unsafe_allow_html=True
 )
 
-st.title("Calculadora de Aproveitamento de Papel")
+st.markdown(
+    """
+    <style>
+        .card-m87 {
+            background: linear-gradient(135deg, #111827, #1f2937);
+            border: 1px solid #374151;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+            min-height: 65px;
+            margin-bottom: 0px;
+        }
+
+        .card-label {
+            font-size: 9px;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .card-value {
+            font-size: 30px;
+            color: #FFFFFF;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .card-extra {
+            font-size: 12px;
+            color: #D1D5DB;
+            margin-top: 7px;
+        }
+
+        div[data-testid="stButton"] > button[kind="primary"] {
+            background-color: #C98A1A !important;
+            border: 1px solid #C98A1A !important;
+            color: white !important;
+            font-weight: 800;
+            border-radius: 10px;
+            height: 58px;
+            font-size: 18px;
+        }
+
+        div[data-testid="stButton"] > button[kind="primary"]:hover {
+            background-color: #D99A27 !important;
+            border: 1px solid #D99A27 !important;
+        }
+
+        div[data-testid="stButton"] > button[kind="secondary"] {
+            height: 58px !important;
+            font-size: 5px !important;
+            padding: 4px 18px !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.subheader("Calculadora de Aproveitamento de Papel")
 
 
 # ==================================================
@@ -36,28 +99,87 @@ st.title("Calculadora de Aproveitamento de Papel")
 linha1_col1, linha1_col2 = st.columns(2)
 
 with linha1_col1:
-    papel_largura = st.number_input("Largura do papel (mm)", value=450, min_value=1, key="papel_largura")
+    papel_largura = st.number_input(
+        "Largura do papel (mm)",
+        value=480,
+        min_value=1,
+        key="papel_largura"
+    )
 
 with linha1_col2:
-    papel_altura = st.number_input("Altura do papel (mm)", value=320, min_value=1, key="papel_altura")
+    papel_altura = st.number_input(
+        "Altura do papel (mm)",
+        value=330,
+        min_value=1,
+        key="papel_altura"
+    )
 
 
 linha2_col1, linha2_col2 = st.columns(2)
 
 with linha2_col1:
-    peca_largura = st.number_input("Largura da peça (mm)", value=90, min_value=1, key="peca_largura")
+    peca_largura = st.number_input(
+        "Largura da peça (mm)",
+        value=85,
+        min_value=1,
+        key="peca_largura"
+    )
 
 with linha2_col2:
-    peca_altura = st.number_input("Altura da peça (mm)", value=50, min_value=1, key="peca_altura")
+    peca_altura = st.number_input(
+        "Altura da peça (mm)",
+        value=55,
+        min_value=1,
+        key="peca_altura"
+    )
 
 
-linha3_col1, linha3_col2 = st.columns(2)
+quantidade_pecas = st.number_input(
+    "Quantidade de peças",
+    value=500,
+    min_value=1,
+    key="quantidade_pecas"
+)
 
-with linha3_col1:
-    espaco = st.number_input("Espaço entre peças (mm)", value=5, min_value=0, key="espaco")
 
-with linha3_col2:
-    margem = st.number_input("Margem de segurança (mm)", value=5, min_value=0, key="margem")
+# ==================================================
+# CONFIGURAÇÕES + BOTÕES
+# ==================================================
+
+linha_final_1, linha_final_2, linha_final_3, linha_final_4 = st.columns([1.05, 1.05, 1.7, 0.7])
+
+with linha_final_1:
+    espaco = st.number_input(
+        "Espaço",
+        value=5,
+        min_value=0,
+        key="espaco"
+    )
+
+with linha_final_2:
+    margem = st.number_input(
+        "Margem",
+        value=5,
+        min_value=0,
+        key="margem"
+    )
+
+with linha_final_3:
+    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+
+    melhor = st.button(
+        "Melhor Montagem",
+        type="primary",
+        use_container_width=True
+    )
+
+with linha_final_4:
+    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+
+    segunda = st.button(
+    "2ª opção",
+    use_container_width=True
+)
 
 
 # ==================================================
@@ -82,6 +204,17 @@ def calcular(papel_l, papel_a, peca_l, peca_a, espaco, margem):
     inicio_x = margem + (area_util_l - largura_ocupada) / 2
     inicio_y = margem + (area_util_a - altura_ocupada) / 2
 
+    area_folha = papel_l * papel_a
+    area_pecas = total * peca_l * peca_a
+
+    aproveitamento = (area_pecas / area_folha) * 100 if area_folha > 0 else 0
+    desperdicio = 100 - aproveitamento
+
+    sobra_lateral = area_util_l - largura_ocupada
+    sobra_superior = area_util_a - altura_ocupada
+
+    planos = math.ceil(quantidade_pecas / total) if total > 0 else 0
+
     return {
         "peca_l": peca_l,
         "peca_a": peca_a,
@@ -89,7 +222,14 @@ def calcular(papel_l, papel_a, peca_l, peca_a, espaco, margem):
         "linhas": linhas,
         "total": total,
         "inicio_x": inicio_x,
-        "inicio_y": inicio_y
+        "inicio_y": inicio_y,
+        "largura_ocupada": largura_ocupada,
+        "altura_ocupada": altura_ocupada,
+        "aproveitamento": aproveitamento,
+        "desperdicio": desperdicio,
+        "sobra_lateral": sobra_lateral,
+        "sobra_superior": sobra_superior,
+        "planos": planos
     }
 
 
@@ -124,13 +264,72 @@ def obter_opcoes():
 
 
 # ==================================================
+# CARDS
+# ==================================================
+
+def mostrar_cards(resultado):
+    st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    with c1:
+        st.markdown(
+            f"""
+            <div class="card-m87">
+                <div class="card-label">Peças por plano</div>
+                <div class="card-value">{resultado["total"]}</div>
+                <div class="card-extra">{resultado["colunas"]} × {resultado["linhas"]}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with c2:
+        st.markdown(
+            f"""
+            <div class="card-m87">
+                <div class="card-label">Aproveitamento</div>
+                <div class="card-value">{resultado["aproveitamento"]:.1f}%</div>
+                <div class="card-extra">área ocupada</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with c3:
+        st.markdown(
+            f"""
+            <div class="card-m87">
+                <div class="card-label">Planos a imprimir</div>
+                <div class="card-value">{resultado["planos"]}</div>
+                <div class="card-extra">para {quantidade_pecas} peças</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with c4:
+        st.markdown(
+            """
+            <div class="card-m87">
+                <div class="card-label">&nbsp;</div>
+                <div class="card-value">&nbsp;</div>
+                <div class="card-extra">&nbsp;</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown("<div style='height:45px'></div>", unsafe_allow_html=True)
+
+
+# ==================================================
 # DESENHO
 # ==================================================
 
 def desenhar(resultado):
     fig, ax = plt.subplots(figsize=(9, 6))
 
-    # Folha
     ax.add_patch(
         patches.Rectangle(
             (0, 0),
@@ -142,7 +341,6 @@ def desenhar(resultado):
         )
     )
 
-    # Margem de segurança
     ax.add_patch(
         patches.Rectangle(
             (margem, margem),
@@ -155,7 +353,6 @@ def desenhar(resultado):
         )
     )
 
-    # Peças centralizadas
     for linha in range(resultado["linhas"]):
         for coluna in range(resultado["colunas"]):
             x = resultado["inicio_x"] + coluna * (resultado["peca_l"] + espaco)
@@ -196,32 +393,22 @@ def desenhar(resultado):
 
 
 # ==================================================
-# BOTÕES
+# RESULTADO
 # ==================================================
 
 opcoes = obter_opcoes()
 
-botao1, botao2 = st.columns(2)
-
-with botao1:
-    melhor = st.button("Melhor montagem", type="primary")
-
-with botao2:
-    segunda = st.button("Segunda melhor montagem")
-
-
 if melhor:
     resultado = opcoes[0]
 
+    mostrar_cards(resultado)
     st.pyplot(desenhar(resultado))
 
-    st.write(f"(largura do papel: {papel_largura} mm)")
-    st.write(f"(altura do papel: {papel_altura} mm)")
-
     st.success(f"Melhor opção: {resultado['orientacao']}")
-    st.write(f"Quantidade: **{resultado['total']} peças**")
-    st.write(f"Montagem: **{resultado['colunas']} colunas x {resultado['linhas']} linhas**")
-    st.write(f"Tamanho usado da peça: **{resultado['peca_l']} x {resultado['peca_a']} mm**")
+    st.write(f"Quantidade total: **{quantidade_pecas} peças**")
+    st.write(f"Planos a imprimir: **{resultado['planos']}**")
+    st.write(f"Montagem: **{resultado['colunas']} colunas × {resultado['linhas']} linhas**")
+    st.write(f"Tamanho usado da peça: **{resultado['peca_l']} × {resultado['peca_a']} mm**")
     st.write(f"Espaço entre peças: **{espaco} mm**")
     st.write(f"Margem de segurança: **{margem} mm**")
 
@@ -229,14 +416,13 @@ if melhor:
 if segunda:
     resultado = opcoes[1]
 
+    mostrar_cards(resultado)
     st.pyplot(desenhar(resultado))
 
     st.warning(f"Opção exibida: {resultado['orientacao']}")
-    st.write(f"(largura do papel: {papel_largura} mm)")
-    st.write(f"(altura do papel: {papel_altura} mm)")
-
-    st.write(f"Quantidade: **{resultado['total']} peças**")
-    st.write(f"Montagem: **{resultado['colunas']} colunas x {resultado['linhas']} linhas**")
-    st.write(f"Tamanho usado da peça: **{resultado['peca_l']} x {resultado['peca_a']} mm**")
+    st.write(f"Quantidade total: **{quantidade_pecas} peças**")
+    st.write(f"Planos a imprimir: **{resultado['planos']}**")
+    st.write(f"Montagem: **{resultado['colunas']} colunas × {resultado['linhas']} linhas**")
+    st.write(f"Tamanho usado da peça: **{resultado['peca_l']} × {resultado['peca_a']} mm**")
     st.write(f"Espaço entre peças: **{espaco} mm**")
     st.write(f"Margem de segurança: **{margem} mm**")
