@@ -4,12 +4,16 @@ import matplotlib.patches as patches
 
 
 st.set_page_config(
-    st.markdown(
+    page_title="M87 • Calculadora de Formatos",
+    layout="centered"
+)
+
+st.markdown(
     """
     <div style="
         position: fixed;
-        top: 15px;
-        left: 15px;
+        top: 18px;
+        left: 18px;
         z-index: 9999;
         font-size: 18px;
         color: #FFFFFF;
