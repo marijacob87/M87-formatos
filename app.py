@@ -15,7 +15,7 @@ st.markdown(
         top: 70px;
         left: 18px;
         z-index: 9999;
-        font-size: 18px;
+        font-size: 12px;
         color: #FFFFFF;
         font-weight: 600;
         letter-spacing: 1px;
