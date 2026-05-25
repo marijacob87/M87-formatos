@@ -26,7 +26,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("M87 • Calculadora de Aproveitamento de Papel")
+st.title("Calculadora de Aproveitamento de Papel")
 
 
 # ==================================================
