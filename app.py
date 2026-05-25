@@ -8,6 +8,7 @@ st.set_page_config(
     page_title="M87 • Calculadora de Formatos",
     layout="centered"
 )
+
 st.markdown(
     """
     <div style="
@@ -79,7 +80,7 @@ st.markdown(
 
         div[data-testid="stButton"] > button[kind="secondary"] {
             height: 58px !important;
-            font-size: 5px !important;
+            font-size: 12px !important;
             padding: 4px 18px !important;
             border-radius: 10px !important;
             font-weight: 700 !important;
@@ -92,6 +93,16 @@ st.markdown(
 st.subheader("Calculadora de Aproveitamento de Papel")
 
 
+def converter_numero(valor):
+    if valor == "":
+        return None
+
+    try:
+        return float(valor.replace(",", "."))
+    except ValueError:
+        return None
+
+
 # ==================================================
 # PAINEL VISUAL
 # ==================================================
@@ -99,47 +110,44 @@ st.subheader("Calculadora de Aproveitamento de Papel")
 linha1_col1, linha1_col2 = st.columns(2)
 
 with linha1_col1:
-    papel_largura = st.number_input(
+    papel_largura_txt = st.text_input(
         "Largura do papel (mm)",
-        value=none,
-        min_value=1,
-        key="papel_largura"
+        placeholder="Digite..."
     )
 
 with linha1_col2:
-    papel_altura = st.number_input(
+    papel_altura_txt = st.text_input(
         "Altura do papel (mm)",
-        value=none,
-        min_value=1,
-        key="papel_altura"
+        placeholder="Digite..."
     )
 
 
 linha2_col1, linha2_col2 = st.columns(2)
 
 with linha2_col1:
-    peca_largura = st.number_input(
+    peca_largura_txt = st.text_input(
         "Largura da peça (mm)",
-        value=none,
-        min_value=1,
-        key="peca_largura"
+        placeholder="Digite..."
     )
 
 with linha2_col2:
-    peca_altura = st.number_input(
+    peca_altura_txt = st.text_input(
         "Altura da peça (mm)",
-        value=none,
-        min_value=1,
-        key="peca_altura"
+        placeholder="Digite..."
     )
 
 
-quantidade_pecas = st.number_input(
+quantidade_pecas_txt = st.text_input(
     "Quantidade de peças",
-    value=none,
-    min_value=1,
-    key="quantidade_pecas"
+    placeholder="Digite..."
 )
+
+
+papel_largura = converter_numero(papel_largura_txt)
+papel_altura = converter_numero(papel_altura_txt)
+peca_largura = converter_numero(peca_largura_txt)
+peca_altura = converter_numero(peca_altura_txt)
+quantidade_pecas = converter_numero(quantidade_pecas_txt)
 
 
 # ==================================================
@@ -177,9 +185,9 @@ with linha_final_4:
     st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
 
     segunda = st.button(
-    "2ª opção",
-    use_container_width=True
-)
+        "2ª opção",
+        use_container_width=True
+    )
 
 
 # ==================================================
@@ -302,7 +310,7 @@ def mostrar_cards(resultado):
             <div class="card-m87">
                 <div class="card-label">Planos a imprimir</div>
                 <div class="card-value">{resultado["planos"]}</div>
-                <div class="card-extra">para {quantidade_pecas} peças</div>
+                <div class="card-extra">para {int(quantidade_pecas)} peças</div>
             </div>
             """,
             unsafe_allow_html=True
@@ -396,33 +404,45 @@ def desenhar(resultado):
 # RESULTADO
 # ==================================================
 
-opcoes = obter_opcoes()
+campos_preenchidos = all([
+    papel_largura is not None and papel_largura > 0,
+    papel_altura is not None and papel_altura > 0,
+    peca_largura is not None and peca_largura > 0,
+    peca_altura is not None and peca_altura > 0,
+    quantidade_pecas is not None and quantidade_pecas > 0
+])
 
-if melhor:
-    resultado = opcoes[0]
+if melhor or segunda:
+    if not campos_preenchidos:
+        st.warning("Preencha todos os campos principais antes de calcular.")
 
-    mostrar_cards(resultado)
-    st.pyplot(desenhar(resultado))
+if campos_preenchidos:
+    opcoes = obter_opcoes()
 
-    st.success(f"Melhor opção: {resultado['orientacao']}")
-    st.write(f"Quantidade total: **{quantidade_pecas} peças**")
-    st.write(f"Planos a imprimir: **{resultado['planos']}**")
-    st.write(f"Montagem: **{resultado['colunas']} colunas × {resultado['linhas']} linhas**")
-    st.write(f"Tamanho usado da peça: **{resultado['peca_l']} × {resultado['peca_a']} mm**")
-    st.write(f"Espaço entre peças: **{espaco} mm**")
-    st.write(f"Margem de segurança: **{margem} mm**")
+    if melhor:
+        resultado = opcoes[0]
 
+        mostrar_cards(resultado)
+        st.pyplot(desenhar(resultado))
 
-if segunda:
-    resultado = opcoes[1]
+        st.success(f"Melhor opção: {resultado['orientacao']}")
+        st.write(f"Quantidade total: **{int(quantidade_pecas)} peças**")
+        st.write(f"Planos a imprimir: **{resultado['planos']}**")
+        st.write(f"Montagem: **{resultado['colunas']} colunas × {resultado['linhas']} linhas**")
+        st.write(f"Tamanho usado da peça: **{resultado['peca_l']} × {resultado['peca_a']} mm**")
+        st.write(f"Espaço entre peças: **{espaco} mm**")
+        st.write(f"Margem de segurança: **{margem} mm**")
 
-    mostrar_cards(resultado)
-    st.pyplot(desenhar(resultado))
+    if segunda:
+        resultado = opcoes[1]
 
-    st.warning(f"Opção exibida: {resultado['orientacao']}")
-    st.write(f"Quantidade total: **{quantidade_pecas} peças**")
-    st.write(f"Planos a imprimir: **{resultado['planos']}**")
-    st.write(f"Montagem: **{resultado['colunas']} colunas × {resultado['linhas']} linhas**")
-    st.write(f"Tamanho usado da peça: **{resultado['peca_l']} × {resultado['peca_a']} mm**")
-    st.write(f"Espaço entre peças: **{espaco} mm**")
-    st.write(f"Margem de segurança: **{margem} mm**")
+        mostrar_cards(resultado)
+        st.pyplot(desenhar(resultado))
+
+        st.warning(f"Opção exibida: {resultado['orientacao']}")
+        st.write(f"Quantidade total: **{int(quantidade_pecas)} peças**")
+        st.write(f"Planos a imprimir: **{resultado['planos']}**")
+        st.write(f"Montagem: **{resultado['colunas']} colunas × {resultado['linhas']} linhas**")
+        st.write(f"Tamanho usado da peça: **{resultado['peca_l']} × {resultado['peca_a']} mm**")
+        st.write(f"Espaço entre peças: **{espaco} mm**")
+        st.write(f"Margem de segurança: **{margem} mm**")
