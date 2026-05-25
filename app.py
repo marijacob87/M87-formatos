@@ -4,11 +4,25 @@ import matplotlib.patches as patches
 
 
 st.set_page_config(
-    page_title="Calculadora de Aproveitamento de Papel",
-    layout="centered"
+    st.markdown(
+    """
+    <div style="
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 9999;
+        font-size: 18px;
+        color: #FFFFFF;
+        font-weight: 600;
+        letter-spacing: 1px;
+    ">
+        By @M87 • TOOLS
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
-st.title("M87 • Calculadora de Formatos")
+st.title("M87 • Calculadora de Aproveitamento de Papel")
 
 
 # ==================================================
