@@ -223,6 +223,8 @@ def calcular(papel_l, papel_a, peca_l, peca_a, espaco, margem):
 
     planos = math.ceil(quantidade_pecas / total) if total > 0 else 0
 
+    pecas_produzidas = total * planos
+
     return {
         "peca_l": peca_l,
         "peca_a": peca_a,
@@ -237,7 +239,8 @@ def calcular(papel_l, papel_a, peca_l, peca_a, espaco, margem):
         "desperdicio": desperdicio,
         "sobra_lateral": sobra_lateral,
         "sobra_superior": sobra_superior,
-        "planos": planos
+        "planos": planos,
+        "pecas_produzidas": pecas_produzidas
     }
 
 
@@ -276,7 +279,7 @@ def obter_opcoes():
 # ==================================================
 
 def mostrar_cards(resultado):
-    st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:50px'></div>", unsafe_allow_html=True)
 
     c1, c2, c3, c4 = st.columns(4)
 
@@ -317,18 +320,19 @@ def mostrar_cards(resultado):
         )
 
     with c4:
-        st.markdown(
-            """
-            <div class="card-m87">
-                <div class="card-label">&nbsp;</div>
-                <div class="card-value">&nbsp;</div>
-                <div class="card-extra">&nbsp;</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        excedente = int(resultado["pecas_produzidas"] - quantidade_pecas)
 
-    st.markdown("<div style='height:45px'></div>", unsafe_allow_html=True)
+        st.markdown(
+        f"""
+        <div class="card-m87">
+            <div class="card-label">Produção final</div>
+            <div class="card-value">{resultado["pecas_produzidas"]}</div>
+            <div class="card-extra">+{excedente} excedente</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+        )
+    st.markdown("<div style='height:70px'></div>", unsafe_allow_html=True)
 
 
 # ==================================================
