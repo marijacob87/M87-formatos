@@ -101,7 +101,7 @@ linha1_col1, linha1_col2 = st.columns(2)
 with linha1_col1:
     papel_largura = st.number_input(
         "Largura do papel (mm)",
-        value=480,
+        value=none,
         min_value=1,
         key="papel_largura"
     )
@@ -109,7 +109,7 @@ with linha1_col1:
 with linha1_col2:
     papel_altura = st.number_input(
         "Altura do papel (mm)",
-        value=330,
+        value=none,
         min_value=1,
         key="papel_altura"
     )
@@ -120,7 +120,7 @@ linha2_col1, linha2_col2 = st.columns(2)
 with linha2_col1:
     peca_largura = st.number_input(
         "Largura da peça (mm)",
-        value=85,
+        value=none,
         min_value=1,
         key="peca_largura"
     )
@@ -128,7 +128,7 @@ with linha2_col1:
 with linha2_col2:
     peca_altura = st.number_input(
         "Altura da peça (mm)",
-        value=55,
+        value=none,
         min_value=1,
         key="peca_altura"
     )
@@ -136,7 +136,7 @@ with linha2_col2:
 
 quantidade_pecas = st.number_input(
     "Quantidade de peças",
-    value=500,
+    value=none,
     min_value=1,
     key="quantidade_pecas"
 )
