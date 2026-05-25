@@ -12,7 +12,7 @@ st.markdown(
     """
     <div style="
         position: fixed;
-        top: 18px;
+        top: 70px;
         left: 18px;
         z-index: 9999;
         font-size: 18px;
