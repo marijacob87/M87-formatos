@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("Calculadora de formatos")
+st.title("M87 • Calculadora de Formatos")
 
 
 # ==================================================
