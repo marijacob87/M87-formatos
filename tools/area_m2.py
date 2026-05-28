@@ -1,26 +1,17 @@
 import streamlit as st
 
-
-st.markdown("""
-<div style="text-align:center;color:#C98A1A;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">
-BY @M87 • TOOLS
-</div>
-""", unsafe_allow_html=True)
-
-st.subheader("Calculadora de Área em m²")
-st.caption("Para papel, adesivo, lona, vinil, placa, banner e materiais vendidos por área.")
+from core.components import card, titulo_tool
+from core.rules import AREA_UNITS
+from core.utils import converter_numero
 
 
-def converter_numero(valor):
-    if valor == "":
-        return None
-    try:
-        return float(valor.replace(",", "."))
-    except ValueError:
-        return None
+titulo_tool(
+    "Calculadora de Área em m²",
+    "Para papel, adesivo, lona, vinil, placa, banner e materiais vendidos por área."
+)
 
 with st.form("form_area"):
-    unidade = st.selectbox("Unidade informada", ["mm", "cm", "m"])
+    unidade = st.selectbox("Unidade informada", list(AREA_UNITS.keys()))
 
     col1, col2 = st.columns(2)
     with col1:
@@ -29,7 +20,6 @@ with st.form("form_area"):
         altura_txt = st.text_input("Altura", placeholder="Ex: 1000")
 
     quantidade_txt = st.text_input("Quantidade", placeholder="Ex: 1", value="1")
-
     calcular = st.form_submit_button("Calcular área", type="primary", use_container_width=True)
 
 largura = converter_numero(largura_txt)
@@ -46,20 +36,16 @@ if calcular:
     if not campos_ok:
         st.warning("Preencha largura, altura e quantidade.")
     else:
-        if unidade == "mm":
-            largura_m = largura / 1000
-            altura_m = altura / 1000
-        elif unidade == "cm":
-            largura_m = largura / 100
-            altura_m = altura / 100
-        else:
-            largura_m = largura
-            altura_m = altura
-
+        divisor = AREA_UNITS[unidade]
+        largura_m = largura / divisor
+        altura_m = altura / divisor
         area_unitaria = largura_m * altura_m
         area_total = area_unitaria * quantidade
 
         st.success("Área calculada")
+
         c1, c2 = st.columns(2)
-        c1.metric("Área unitária", f"{area_unitaria:.3f} m²")
-        c2.metric("Área total", f"{area_total:.3f} m²")
+        with c1:
+            card("Área unitária", f"{area_unitaria:.3f} m²")
+        with c2:
+            card("Área total", f"{area_total:.3f} m²", f"{int(quantidade)} un.")

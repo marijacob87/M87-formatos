@@ -1,23 +1,13 @@
 import streamlit as st
 
-
-st.markdown("""
-<div style="text-align:center;color:#C98A1A;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">
-BY @M87 • TOOLS
-</div>
-""", unsafe_allow_html=True)
-
-st.subheader("Calculadora de Peso de Papel")
-st.caption("Calcula o peso total a partir do formato, gramatura e quantidade.")
+from core.components import card, titulo_tool
+from core.utils import converter_numero
 
 
-def converter_numero(valor):
-    if valor == "":
-        return None
-    try:
-        return float(valor.replace(",", "."))
-    except ValueError:
-        return None
+titulo_tool(
+    "Calculadora de Peso de Papel",
+    "Calcula o peso total a partir do formato, gramatura e quantidade."
+)
 
 with st.form("form_peso"):
     col1, col2 = st.columns(2)
@@ -49,12 +39,20 @@ if calcular:
         st.warning("Preencha largura, altura, gramatura e quantidade.")
     else:
         area_m2 = (largura / 1000) * (altura / 1000)
-        peso_kg = area_m2 * gramatura * quantidade / 1000
+        peso_unitario_kg = area_m2 * gramatura / 1000
+        peso_total_kg = peso_unitario_kg * quantidade
 
         st.success("Peso calculado")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Área unitária", f"{area_m2:.3f} m²")
-        c2.metric("Peso total", f"{peso_kg:.2f} kg")
-        c3.metric("Quantidade", f"{int(quantidade)}")
 
-        st.write(f"Conta: **{largura:g} × {altura:g} mm**, **{gramatura:g} g/m²**, **{int(quantidade)} folhas/peças**.")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            card("Área unitária", f"{area_m2:.3f} m²")
+        with c2:
+            card("Peso unitário", f"{peso_unitario_kg:.3f} kg")
+        with c3:
+            card("Peso total", f"{peso_total_kg:.2f} kg", f"{int(quantidade)} un.")
+
+        st.write(
+            f"Conta: **{largura:g} × {altura:g} mm**, "
+            f"**{gramatura:g} g/m²**, **{int(quantidade)} folhas/peças**."
+        )
