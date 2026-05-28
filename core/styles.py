@@ -17,16 +17,18 @@ def carregar_css():
             --m87-accent-hover: {t['accent_hover']};
         }}
 
-        /* Esconde o botão de recolher sidebar */
+        .stApp {{
+            background-color: var(--m87-bg);
+        }}
+
         [data-testid="collapsedControl"] {{
             display: none !important;
         }}
 
-        /* Sidebar fixa, mais fina e com a mesma cor do fundo */
         section[data-testid="stSidebar"] {{
-            min-width: 235px !important;
-            width: 235px !important;
-            max-width: 235px !important;
+            min-width: 220px !important;
+            width: 220px !important;
+            max-width: 220px !important;
             background-color: var(--m87-bg) !important;
             border-right: 1px solid rgba(255,255,255,0.04) !important;
         }}
@@ -34,46 +36,66 @@ def carregar_css():
         section[data-testid="stSidebar"] > div {{
             background-color: var(--m87-bg) !important;
             padding-top: 52px !important;
-            padding-left: 12px !important;
-            padding-right: 12px !important;
+            padding-left: 10px !important;
+            padding-right: 10px !important;
         }}
 
-        /* Links da navegação */
-        section[data-testid="stSidebar"] a {{
-            font-size: 10px !important;
-            font-weight: 800 !important;
-            letter-spacing: 1.35px !important;
+        section[data-testid="stSidebar"] a,
+        section[data-testid="stSidebar"] a p,
+        section[data-testid="stSidebar"] a span {{
+            font-size: 9px !important;
+            font-weight: 700 !important;
+            letter-spacing: 1.5px !important;
             text-transform: uppercase !important;
-            color: rgba(255,255,255,0.66) !important;
-            border-radius: 8px !important;
-            padding: 7px 10px !important;
-            margin-bottom: 5px !important;
-            line-height: 1.15 !important;
+            color: rgba(255,255,255,0.72) !important;
+            line-height: 1.2 !important;
+            text-decoration: none !important;
+        }}
+
+        section[data-testid="stSidebar"] a {{
+            border-radius: 10px !important;
+            padding: 10px 12px !important;
+            margin-bottom: 4px !important;
+            transition: all 0.18s ease !important;
         }}
 
         section[data-testid="stSidebar"] a:hover {{
-            color: #FFFFFF !important;
             background-color: rgba(201,138,26,0.14) !important;
+        }}
+
+        section[data-testid="stSidebar"] a:hover p,
+        section[data-testid="stSidebar"] a:hover span {{
+            color: #FFFFFF !important;
         }}
 
         section[data-testid="stSidebar"] a[aria-current="page"],
         section[data-testid="stSidebar"] a[data-active="true"] {{
-            color: var(--m87-accent) !important;
-            background-color: rgba(201,138,26,0.15) !important;
+            background-color: rgba(201,138,26,0.16) !important;
         }}
 
-        /* Remove/neutraliza espaços de ícones da navegação, se o Streamlit gerar algum */
+        section[data-testid="stSidebar"] a[aria-current="page"] p,
+        section[data-testid="stSidebar"] a[aria-current="page"] span {{
+            color: var(--m87-accent) !important;
+        }}
+
         section[data-testid="stSidebar"] svg,
         section[data-testid="stSidebar"] img {{
             display: none !important;
         }}
 
-        /* Botões globais */
+        .stTextInput input,
+        .stNumberInput input {{
+            background-color: #222330 !important;
+            border: 1px solid transparent !important;
+            color: white !important;
+            border-radius: 10px !important;
+        }}
+
         div[data-testid="stButton"] > button,
         div[data-testid="stFormSubmitButton"] > button {{
             background-color: var(--m87-accent) !important;
             border: 1px solid var(--m87-accent) !important;
-            color: #FFFFFF !important;
+            color: white !important;
             font-weight: 800 !important;
             border-radius: 10px !important;
             min-height: 52px !important;
@@ -85,15 +107,8 @@ def carregar_css():
         div[data-testid="stFormSubmitButton"] > button:hover {{
             background-color: var(--m87-accent-hover) !important;
             border-color: var(--m87-accent-hover) !important;
-            color: #FFFFFF !important;
         }}
 
-        div[data-testid="stButton"] > button:focus,
-        div[data-testid="stFormSubmitButton"] > button:focus {{
-            box-shadow: 0 0 0 2px rgba(201,138,26,0.28) !important;
-        }}
-
-        /* Cards M87 */
         .card-m87 {{
             background: linear-gradient(135deg, var(--m87-surface), var(--m87-surface-alt));
             border: 1px solid var(--m87-border);
