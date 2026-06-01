@@ -10,13 +10,19 @@ st.set_page_config(
 
 aplicar_estilo_global()
 
-paginas = [
-    st.Page("tools/calculadora_formatos.py", title="Calculadora de Formatos", default=True),
-    st.Page("tools/peso_papel.py", title="Calculadora Peso de Papel"),
-    st.Page("tools/area_m2.py", title="Calculadora de Área m²"),
-    st.Page("tools/checklist_pre_impressao.py", title="Checklist Pré-Impressão"),
-    st.Page("tools/biblioteca_formatos.py", title="Biblioteca de Formatos"),
-]
+paginas = {
+    "CALCULADORAS": [
+        st.Page("tools/calculadora_formatos.py", title="FORMATOS (MONTAGENS)", default=True),
+        st.Page("tools/peso_papel.py", title="PESO DE PAPEL"),
+        st.Page("tools/area_m2.py", title="ÁREA EM M²"),
+        st.Page("tools/preco_papel.py", title="PREÇO DO PAPEL"),
+    ],
+    "FERRAMENTAS": [
+        st.Page("tools/novo_orcamento.py", title="NOVO ORÇAMENTO"),
+        st.Page("tools/checklist_pre_impressao.py", title="CHECK LIST PRÉ IMPRESSÃO"),
+        st.Page("tools/biblioteca_formatos.py", title="BIBLIOTECA DE FORMATOS"),
+    ],
+}
 
 navegacao = st.navigation(paginas, position="sidebar")
 navegacao.run()
