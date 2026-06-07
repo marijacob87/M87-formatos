@@ -17,10 +17,22 @@ paginas = {
         st.Page("tools/area_m2.py", title="ÁREA EM M²"),
         st.Page("tools/preco_papel.py", title="PREÇO DO PAPEL"),
     ],
-    "FERRAMENTAS": [
+
+    "ORÇAMENTOS": [
         st.Page("tools/novo_orcamento.py", title="NOVO ORÇAMENTO"),
-        st.Page("tools/checklist_pre_impressao.py", title="CHECK LIST PRÉ IMPRESSÃO"),
+        st.Page("tools/orcamento_aprovado.py", title="ORÇAMENTO APROVADO"),
+        st.Page("tools/cadastro_clientes.py", title="CADASTRO DE CLIENTES"),
+    ],
+
+    "CHECKLISTS": [
+        st.Page("tools/checklist_pre_impressao.py", title="PRÉ-IMPRESSÃO"),
+        st.Page("tools/checklist_saida_producao.py", title="SAÍDA PARA PRODUÇÃO"),
+        st.Page("tools/checklist_pfi.py", title="CORTE / VINCO / PFI"),
+    ],
+
+    "FERRAMENTAS": [
         st.Page("tools/biblioteca_formatos.py", title="BIBLIOTECA DE FORMATOS"),
+        st.Page("tools/acabamentos.py", title="ACABAMENTOS"),
     ],
 }
 
