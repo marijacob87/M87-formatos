@@ -1,194 +1,104 @@
-# M87 TOOLS
+# M87 Tools
 
-Ferramentas para gráfica, pré-impressão e produção gráfica desenvolvidas em Python + Streamlit.
+Ferramentas para gráfica, pré-impressão e produção gráfica desenvolvidas em Python e Streamlit.
 
-Projeto criado para transformar cálculos repetitivos, conferências técnicas e pequenos processos do dia a dia em ferramentas rápidas, visuais e práticas.
-
----
-
-## Objetivo do projeto
-
-O M87 Tools nasceu da ideia de criar uma central de utilidades para produção gráfica.
-
-A proposta é simples:
-
-> abrir → calcular → conferir → produzir
-
-Sem planilhas gigantes.
-Sem fórmulas espalhadas.
-Sem ficar refazendo cálculo no papel ou na calculadora do celular.
-
-Tudo pensado para funcionar de forma rápida, limpa e visual.
+O projeto reúne utilitários rápidos para cálculos comuns, conferências técnicas e apoio em decisões de produção.
 
 ---
 
-# Tecnologias usadas
+## Objetivo
+
+Simplificar o fluxo de trabalho de quem atua em impressão e pré-impressão:
+
+* abrir → calcular → conferir → produzir
+* reduzir retrabalho e erros manuais
+* evitar planilhas complexas e cálculos fora do fluxo
+* oferecer resultados visuais e fáceis de usar
+
+---
+
+## Tecnologias
 
 * Python
 * Streamlit
 * Matplotlib
+* Pandas
 
 ---
 
-# Estrutura atual do projeto
+## Estrutura do projeto
 
 ```bash
-m87-tools/
-│
+M87-formatos/
 ├── app.py
-│
+├── components.py
+├── requirements.txt
+├── rules.py
+├── styles.py
+├── utils.py
+├── core/
+│   ├── __init__.py
+│   ├── components.py
+│   ├── rules.py
+│   ├── styles.py
+│   └── utils.py
 └── tools/
-    ├── formatos.py
-    ├── peso_papel.py
     ├── area_m2.py
+    ├── biblioteca_formatos.py
+    ├── calculadora_formatos.py
     ├── checklist_pre_impressao.py
-    └── biblioteca_formatos.py
+    ├── novo_orcamento.py
+    ├── peso_papel.py
+    ├── preco_papel.py
+    └── formatos.py
 ```
 
 ---
 
-# Ferramentas atuais
+## Ferramentas disponíveis
 
-## Calculadora de Formatos
+### Calculadoras
 
-Calcula automaticamente:
+* `FORMATOS (MONTAGENS)` — cálculo de aproveitamento, peças por folha, rotação, planos, excesso e espaço entre peças
+* `PESO DE PAPEL` — peso final considerando dimensões, gramatura e quantidade
+* `ÁREA EM M²` — conversão e cálculo de área para papéis, lonas, vinis e outros materiais
+* `PREÇO DO PAPEL` — cálculo de custo de material com base em preço por kg ou m²
 
-* peças por folha
-* melhor aproveitamento
-* rotação da peça
-* quantidade de planos
-* excedente
-* margem de segurança
-* espaço entre peças
+### Ferramentas adicionais
 
-Também gera um desenho técnico da montagem.
-
----
-
-## Calculadora de Peso de Papel
-
-Calcula o peso total baseado em:
-
-* largura
-* altura
-* gramatura
-* quantidade
-
-Ideal para:
-
-* orçamentos
-* envio
-* logística
-* conferência de produção
+* `NOVO ORÇAMENTO` — base para criação de propostas de produção
+* `CHECK LIST PRÉ IMPRESSÃO` — conferência de itens importantes antes de enviar para produção
+* `BIBLIOTECA DE FORMATOS` — consulta de formatos padrão e medidas comuns
 
 ---
 
-## Calculadora de Área em m²
+## Navegação
 
-Calcula áreas para:
-
-* papel
-* adesivo
-* lona
-* vinil
-* placas
-* banners
-
-Permite trabalhar em:
-
-* mm
-* cm
-* metros
+O aplicativo usa navegação lateral padrão do Streamlit. As calculadoras aparecem na seção de "CALCULADORAS" e as demais ferramentas na seção "FERRAMENTAS".
 
 ---
 
-## Checklist Pré-Impressão
+## Como executar
 
-Checklist rápido para conferência de arquivos antes da produção.
-
-Inclui verificações como:
-
-* sangria
-* CMYK
-* fontes em curvas
-* overprint
-* resolução
-* imagens linkadas
-* marcas de corte
-
----
-
-## Biblioteca de Formatos
-
-Consulta rápida de formatos padrão:
-
-* A4
-* A3
-* SRA3
-* cartões
-* flyers
-* formatos gráficos comuns
-
----
-
-# Navegação
-
-O projeto utiliza uma navegação lateral fixa.
-
-A calculadora principal abre automaticamente ao acessar o site, enquanto as demais ferramentas ficam disponíveis no menu lateral.
-
----
-
-# Filosofia do projeto
-
-O foco não é criar um sistema corporativo pesado.
-
-A ideia é construir ferramentas:
-
-* rápidas
-* diretas
-* bonitas
-* úteis no mundo real
-
-Ferramentas feitas por quem trabalha diariamente com impressão, fechamento e produção gráfica.
-
----
-
-# Próximas ferramentas planejadas
-
-* calculadora de custo por peça
-* cálculo de lombada
-* cálculo de DPI real
-* impositor automático
-* simulador de desperdício
-* ficha técnica automática
-* ordem de produção
-* calculadora de sangria
-* comparador de formatos
-
----
-
-# Rodando localmente
-
-Clone o projeto:
+1. Clone o repositório:
 
 ```bash
 git clone URL_DO_REPOSITORIO
 ```
 
-Entre na pasta:
+2. Acesse a pasta do projeto:
 
 ```bash
-cd m87-tools
+cd M87-formatos
 ```
 
-Instale as dependências:
+3. Instale as dependências:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Execute:
+4. Execute o projeto:
 
 ```bash
 streamlit run app.py
@@ -196,7 +106,12 @@ streamlit run app.py
 
 ---
 
-# Deploy
+## Observações
+
+* O projeto é ideal para profissionais de produção gráfica que precisam de cálculos rápidos sem planilhas complexas.
+* O design é focado em usabilidade e velocidade.
+* A base permite evoluir com novas ferramentas de cálculo e conferência.
+
 
 O projeto está preparado para deploy no:
 
