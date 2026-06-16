@@ -40,6 +40,18 @@ def carregar_css():
             padding-right: 10px !important;
         }}
 
+        section[data-testid="stSidebar"] [data-testid="stSidebarNav"] div[role="heading"],section[data-testid="stSidebar"] [data-testid="stSidebarNav"] p {{
+            font-size: 9px !important;
+            font-weight: 700 !important;
+            letter-spacing: 1.5px !important;
+            text-transform: uppercase !important;
+            color: rgba(255,255,255,0.72) !important;
+            line-height: 1.2 !important;
+            margin-top: 22px !important;
+            margin-bottom: 8px !important;
+            padding-left: 12px !important;
+        }}
+
         section[data-testid="stSidebar"] a,
         section[data-testid="stSidebar"] a p,
         section[data-testid="stSidebar"] a span {{
@@ -54,11 +66,12 @@ def carregar_css():
 
         section[data-testid="stSidebar"] a {{
             border-radius: 10px !important;
-            padding: 10px 12px !important;
+            padding: 10px 12px 10px 28px !important;
             margin-bottom: 4px !important;
             transition: all 0.18s ease !important;
         }}
 
+        
         section[data-testid="stSidebar"] a:hover {{
             background-color: rgba(201,138,26,0.14) !important;
         }}
