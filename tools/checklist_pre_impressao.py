@@ -82,6 +82,23 @@ st.markdown(
             font-size: 1.4rem;
             line-height: 1;
         }
+        /* CHECKBOX MAIOR SEM AUMENTAR ALTURA TOTAL */
+        div[data-testid="stCheckbox"] {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        div[data-testid="stCheckbox"] label {
+            min-height: 24px !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        
+        div[data-testid="stCheckbox"] input {
+            transform: scale(1.25);
+            margin-right: 8px !important;
+        }
     </style>
     """,
     unsafe_allow_html=True
