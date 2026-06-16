@@ -64,10 +64,11 @@ def carregar_css():
             text-decoration: none !important;
         }}
 
-        section[data-testid="stSidebar"] a {{
+        section[data-testid="stSidebar"] a {
             border-radius: 10px !important;
-            padding: 10px 12px 10px 28px !important;
-            margin-bottom: 4px !important;
+            padding: 4px 12px 4px 20px !important;
+            margin-bottom: 1px !important;
+            min-height: 28px !important;
             transition: all 0.18s ease !important;
         }}
 
