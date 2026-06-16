@@ -96,7 +96,7 @@ st.markdown(
         }
         
         div[data-testid="stCheckbox"] input {
-            transform: scale(1.25);
+            transform: scale(1.4);
             margin-right: 8px !important;
         }
     </style>
