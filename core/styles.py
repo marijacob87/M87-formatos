@@ -84,5 +84,21 @@ def carregar_css():
             margin-top: 0px;
             margin-bottom: 12px;
         }
-    </style>
-    """
+        
+        div[data-testid="stButton"] > button,
+        div[data-testid="stFormSubmitButton"] > button {
+            background-color: #D0931D !important;
+            border: 1px solid #D0931D !important;
+            color: white !important;
+            font-weight: 800 !important;
+            border-radius: 10px !important;
+        }
+
+        div[data-testid="stButton"] > button:hover,
+        div[data-testid="stFormSubmitButton"] > button:hover {
+            background-color: #B8821A !important;
+            border-color: #B8821A !important;
+        }
+
+        </style>
+        """
