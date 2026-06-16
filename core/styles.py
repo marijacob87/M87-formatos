@@ -1,7 +1,3 @@
-"""CSS global do M87 Tools."""
-from .rules import THEME
-
-
 def carregar_css():
     t = THEME
     return f"""
@@ -40,15 +36,16 @@ def carregar_css():
             padding-right: 10px !important;
         }}
 
-        section[data-testid="stSidebar"] [data-testid="stSidebarNav"] div[role="heading"],section[data-testid="stSidebar"] [data-testid="stSidebarNav"] p {{
+        section[data-testid="stSidebar"] [data-testid="stSidebarNav"] div[role="heading"],
+        section[data-testid="stSidebar"] [data-testid="stSidebarNav"] p {{
             font-size: 9px !important;
             font-weight: 700 !important;
             letter-spacing: 1.5px !important;
             text-transform: uppercase !important;
             color: rgba(255,255,255,0.72) !important;
-            line-height: 1.2 !important;
-            margin-top: 22px !important;
-            margin-bottom: 8px !important;
+            line-height: 1.1 !important;
+            margin-top: 10px !important;
+            margin-bottom: 2px !important;
             padding-left: 12px !important;
         }}
 
@@ -60,19 +57,27 @@ def carregar_css():
             letter-spacing: 1.5px !important;
             text-transform: uppercase !important;
             color: rgba(255,255,255,0.72) !important;
-            line-height: 1.2 !important;
+            line-height: 1.1 !important;
             text-decoration: none !important;
         }}
 
-        section[data-testid="stSidebar"] a {
+        section[data-testid="stSidebar"] a {{
             border-radius: 10px !important;
             padding: 4px 12px 4px 20px !important;
-            margin-bottom: 1px !important;
-            min-height: 28px !important;
+            margin: 0 !important;
+            min-height: auto !important;
             transition: all 0.18s ease !important;
         }}
 
-        
+        section[data-testid="stSidebar"] ul {{
+            gap: 0px !important;
+        }}
+
+        section[data-testid="stSidebar"] li {{
+            margin: 0 !important;
+            padding: 0 !important;
+        }}
+
         section[data-testid="stSidebar"] a:hover {{
             background-color: rgba(201,138,26,0.14) !important;
         }}
