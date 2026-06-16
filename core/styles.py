@@ -1,3 +1,7 @@
+"""CSS global do M87 Tools."""
+from .rules import THEME
+
+
 def carregar_css():
     t = THEME
     return f"""
