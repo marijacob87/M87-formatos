@@ -3,9 +3,27 @@
 
 def carregar_css():
     return """
+    
     <style>
         .stApp {
             background-color: #0E1117;
+        }
+
+        
+        /* Segmented control */
+        [data-testid="stSegmentedControl"] button {
+            color: #FFFFFF !important;
+            border-color: #D0931D !important;
+        }
+
+        [data-testid="stSegmentedControl"] button[aria-pressed="true"] {
+            background-color: #D0931D !important;
+            color: #FFFFFF !important;
+            border-color: #D0931D !important;
+        }
+
+        [data-testid="stSegmentedControl"] button p {
+            color: inherit !important;
         }
 
         [data-testid="collapsedControl"] {
@@ -84,7 +102,7 @@ def carregar_css():
             margin-top: 0px;
             margin-bottom: 12px;
         }
-        
+
         div[data-testid="stButton"] > button,
         div[data-testid="stFormSubmitButton"] > button {
             background-color: #D0931D !important;
@@ -100,5 +118,42 @@ def carregar_css():
             border-color: #B8821A !important;
         }
 
-        </style>
-        """
+        .stTabs [data-baseweb="tab"] {
+            color: #D0931D !important;
+            font-weight: 700 !important;
+        }
+
+        .stTabs [data-baseweb="tab"] p {
+            color: #D0931D !important;
+        }
+
+        .stTabs [data-baseweb="tab-highlight"] {
+            background-color: #D0931D !important;
+        }
+
+        div[role="radiogroup"] label span:first-child {
+            border-color: #D0931D !important;
+        }
+
+        div[role="radiogroup"] label span:first-child > span {
+            background-color: #D0931D !important;
+        }
+
+        [data-testid="stNumberInput"] button {
+            background-color: #D0931D !important;
+            border-color: #D0931D !important;
+            color: white !important;
+        }
+
+        [data-testid="stNumberInput"] button:hover {
+            background-color: #B8821A !important;
+            border-color: #B8821A !important;
+            color: white !important;
+        }
+
+        .stMarkdown li::marker {
+            color: #D0931D !important;
+        }
+
+    </style>
+    """

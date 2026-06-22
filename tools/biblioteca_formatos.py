@@ -7,43 +7,9 @@ from core.rules import STANDARD_FORMATS
 
 titulo_tool(
     "Formatos",
-   
-    "Use para redimensionar uma arte sem distorcer a proporção."
-
-    "• Informe a largura e a altura original."
-    "• Escolha se quer calcular por nova medida ou por escala."
-    "• Consulte medidas padrão na aba Biblioteca."
-  
+    "Redimensione uma arte sem distorcer: informe a medida original, escolha se quer calcular por nova medida ou escala, e consulte formatos padrão na Biblioteca."
 )
 
-
-st.markdown(
-    """
-    <style>
-        .stTabs [data-baseweb="tab"] {
-            color: #f5c542 !important;
-            font-weight: 700;
-        }
-
-        .stTabs [data-baseweb="tab"] p {
-            color: #f5c542 !important;
-        }
-
-        .stTabs [data-baseweb="tab-highlight"] {
-            background-color: #f5c542 !important;
-        }
-
-        div[role="radiogroup"] label span:first-child {
-            border-color: #f5c542 !important;
-        }
-
-        div[role="radiogroup"] label span:first-child > span {
-            background-color: #f5c542 !important;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 def normalizar_busca(texto):
     """Padroniza a busca para aceitar nome, medida com x, ×, vírgula ou espaços."""
@@ -96,17 +62,17 @@ with aba_proporcao:
             format="%.2f"
         )
 
-    modo = st.radio(
+    modo = st.segmented_control(
         "Calcular por",
         ["Nova medida", "Escala %"],
-        horizontal=True
+        default="Nova medida"
     )
 
     if modo == "Nova medida":
-        base_calculo = st.radio(
+        base_calculo = st.segmented_control(
             "Redimensionar pela",
             ["Largura", "Altura"],
-            horizontal=True
+            default="Largura"
         )
 
         nova_medida = st.number_input(
