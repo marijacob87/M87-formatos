@@ -3,3 +3,7 @@
 git commit -m "atualização de hoje"
 git pull --rebase origin main
 git push
+-------------------------
+## Comando para rodar localmente
+python3 -m streamlit run app.py
+-------------------------

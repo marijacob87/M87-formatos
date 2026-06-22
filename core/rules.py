@@ -27,9 +27,11 @@ STANDARD_FORMATS = [
     {"nome": "SRA3", "largura": 320, "altura": 450, "categoria": "SRA"},
     {"nome": "SRA4", "largura": 225, "altura": 320, "categoria": "SRA"},
     {"nome": "Cartão de visita EU", "largura": 85, "altura": 55, "categoria": "Comercial"},
-    {"nome": "Cartão de visita 90x50", "largura": 90, "altura": 50, "categoria": "Comercial"},
-    {"nome": "Flyer DL", "largura": 99, "altura": 210, "categoria": "Comercial"},
-    {"nome": "Postal A6", "largura": 105, "altura": 148, "categoria": "Comercial"},
+    {"nome": "Cartão de visita BR", "largura": 90, "altura": 50, "categoria": "Comercial"},
+    {"nome": "Envelope C6", "largura": 114, "altura": 162, "categoria": "Envelope"},
+    {"nome": "Envelope DL", "largura": 110, "altura": 220, "categoria": "Envelope"},
+    {"nome": "Envelope C5", "largura": 162, "altura": 229, "categoria": "Envelope"},
+    {"nome": "Envelope C4", "largura": 229, "altura": 324, "categoria": "Envelope"},
 ]
 
 PAPER_PRESETS = [
