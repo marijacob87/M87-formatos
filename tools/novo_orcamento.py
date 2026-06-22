@@ -1,5 +1,5 @@
 import streamlit as st
 
-st.title("Novo orçamento")
+st.title("EM DESENVOLVIMENTO")
 
-st.info("Recurso em desenvolvimento.")
+st.info("Esta ferramenta será criada em breve.")

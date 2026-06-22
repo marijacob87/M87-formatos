@@ -1,0 +1,5 @@
+## Comando para atualizar o GITHUB 
+% git add .
+git commit -m "atualização de hoje"
+git pull --rebase origin main
+git push
