@@ -114,19 +114,42 @@ st.markdown(
             border-color: #D0931D;
         }
 
-        .rgb-alerta {
-            color: #D0931D;
+            .rgb-alerta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 17px;
+            height: 17px;
+            margin-left: 6px;
+            border-radius: 50%;
+            background: #D0931D;
+            color: #0E1117;
+            font-size: 12px;
             font-weight: 900;
-            margin-left: 4px;
+            animation: m87-pisca-alerta 0.9s infinite;
+        }
+
+        @keyframes m87-pisca-alerta {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(208,147,29,0.65);
+            }
+            50% {
+                opacity: 0.45;
+                transform: scale(1.12);
+                box-shadow: 0 0 0 7px rgba(208,147,29,0);
+            }
         }
 
         .pantone-lista {
             color: rgba(255,255,255,0.88);
             font-size: 0.88rem;
             font-weight: 500;
-            margin-top: -2px;
+            margin-height: 1.6;
+            margin-top: 2px;
             margin-bottom: 10px;
-            line-height: 1.35;
+           
         }
 
         [data-testid="stFileUploader"] {
@@ -263,10 +286,15 @@ def mostrar_separacoes(cores):
     )
 
     if cores["SPOTS"]:
+        lista_pantones = "<br>".join(
+            escape(cor) for cor in cores["SPOTS"]
+        )
+
         st.markdown(
-            f'<div class="pantone-lista">{escape(", ".join(cores["SPOTS"]))}</div>',
+            f'<div class="pantone-lista">{lista_pantones}</div>',
             unsafe_allow_html=True
         )
+
     else:
         st.markdown(
             '<div class="pantone-lista">Nenhuma detectada</div>',
