@@ -32,7 +32,7 @@ paginas = {
 
     "FERRAMENTAS": [
         st.Page("tools/biblioteca_formatos.py", title="FORMATOS"),
-        st.Page("tools/acabamentos.py", title="ACABAMENTOS"),
+        st.Page("tools/info_pdf.py", title="INFO PDF"),
     ],
 }
 
