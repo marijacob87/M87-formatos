@@ -1,302 +1,621 @@
-import streamlit as st
-import fitz  # PyMuPDF
-import pikepdf
+import re
 from datetime import datetime
 from io import BytesIO
+from html import escape
+
+import fitz
+import pikepdf
+import streamlit as st
+
+from core.components import titulo_tool
 
 
 MM_PER_POINT = 25.4 / 72
+POINT_PER_MM = 72 / 25.4
+
+PROCESS_COLORS = {
+    "Cyan", "Magenta", "Yellow", "Black",
+    "C", "M", "Y", "K",
+    "All", "None"
+}
 
 
-st.set_page_config(
-    page_title="M87 • INFO PDF",
-    page_icon="📄",
-    layout="wide"
+titulo_tool("Info PDF")
+
+
+st.markdown(
+    """
+    <style>
+        .info-label {
+            font-size: 0.68rem;
+            font-weight: 900;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.48);
+            line-height: 1.1;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.88);
+            line-height: 1.25;
+        }
+
+        .info-row {
+            margin-bottom: 10px;
+        }
+
+        .info-note {
+            font-size: 0.78rem;
+            line-height: 1.35;
+            color: rgba(255,255,255,0.72);
+            background: rgba(208,147,29,0.10);
+            border-left: 3px solid rgba(208,147,29,0.75);
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin: 8px 0 12px 0;
+        }
+
+        .section-line {
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+            margin: 16px 0 14px 0;
+        }
+
+        .preview-caption {
+            color: rgba(255,255,255,0.55);
+            font-size: 0.76rem;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .separacoes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 34px;
+            margin-top: 4px;
+            margin-bottom: 12px;
+        }
+
+        .separacoes-col {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cor-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.84);
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        .cor-box {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            border: 1px solid rgba(208,147,29,0.70);
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #0E1117;
+            font-size: 10px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .cor-box.ativo {
+            background: #D0931D;
+            border-color: #D0931D;
+        }
+
+        .rgb-alerta {
+            color: #D0931D;
+            font-weight: 900;
+            margin-left: 4px;
+        }
+
+        .pantone-lista {
+            color: rgba(255,255,255,0.88);
+            font-size: 0.88rem;
+            font-weight: 500;
+            margin-top: -2px;
+            margin-bottom: 10px;
+            line-height: 1.35;
+        }
+
+        [data-testid="stFileUploader"] {
+            background: rgba(31, 41, 55, 0.38);
+            border: 1px dashed rgba(208,147,29,0.45);
+            border-radius: 14px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        [data-testid="stFileUploader"] section {
+            padding: 10px !important;
+        }
+
+        [data-testid="stFileUploader"] small {
+            display: none !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 
-st.markdown("""
-<style>
-    .stApp {
-        background-color: #1f2523;
-        color: #f2f2f2;
-    }
-
-    h1, h2, h3, p, label, span, div {
-        color: #f2f2f2;
-    }
-
-    .info-card {
-        background: #252c29;
-        border: 1px solid #3a423f;
-        border-radius: 14px;
-        padding: 22px;
-        margin-bottom: 18px;
-    }
-
-    .label {
-        font-size: 0.85rem;
-        color: #b7beb9;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        font-weight: 700;
-    }
-
-    .value {
-        font-size: 1.35rem;
-        color: #f2f2f2;
-        font-weight: 700;
-        margin-bottom: 12px;
-    }
-
-    .warning {
-        background: #4a3b1f;
-        color: #ffd27a;
-        padding: 10px 14px;
-        border-radius: 10px;
-        margin-top: 8px;
-        font-size: 0.95rem;
-    }
-
-    .ok {
-        background: #253f31;
-        color: #91e6b3;
-        padding: 10px 14px;
-        border-radius: 10px;
-        margin-top: 8px;
-        font-size: 0.95rem;
-    }
-
-    .small {
-        color: #b7beb9;
-        font-size: 0.9rem;
-    }
-</style>
-""", unsafe_allow_html=True)
+def pt_to_mm(valor):
+    return round(float(valor) * MM_PER_POINT, 2)
 
 
-def pt_to_mm(value):
-    return round(float(value) * MM_PER_POINT, 2)
+def mm_to_pt(valor):
+    return float(valor) * POINT_PER_MM
 
 
 def box_to_mm(box):
-    width_pt = float(box[2]) - float(box[0])
-    height_pt = float(box[3]) - float(box[1])
-    return pt_to_mm(width_pt), pt_to_mm(height_pt)
+    largura_pt = float(box[2]) - float(box[0])
+    altura_pt = float(box[3]) - float(box[1])
+    return pt_to_mm(largura_pt), pt_to_mm(altura_pt)
 
 
-def format_mm(width, height):
-    return f"{width:.1f} mm x {height:.1f} mm"
+def formatar_mm(largura, altura):
+    return f"{largura:.1f} mm x {altura:.1f} mm"
 
 
-def get_orientation(width, height):
-    if abs(width - height) < 0.5:
+def orientacao(largura, altura):
+    if abs(largura - altura) < 0.5:
         return "Quadrado"
-    if width > height:
+    if largura > altura:
         return "Paisagem"
     return "Retrato"
 
 
-def format_pdf_date(raw_date):
-    if not raw_date:
+def formatar_data_pdf(data_pdf):
+    if not data_pdf:
         return "Não informado"
 
     try:
-        clean = raw_date.replace("D:", "")
-        dt = datetime.strptime(clean[:14], "%Y%m%d%H%M%S")
-        return dt.strftime("%d/%m/%Y às %H:%M")
+        limpa = data_pdf.replace("D:", "")
+        data = datetime.strptime(limpa[:14], "%Y%m%d%H%M%S")
+        return data.strftime("%d/%m/%Y às %H:%M")
     except Exception:
-        return raw_date
+        return data_pdf
 
 
-def get_file_size(size_bytes):
-    if size_bytes < 1024 * 1024:
-        return f"{size_bytes / 1024:.1f} KB"
-    return f"{size_bytes / (1024 * 1024):.2f} MB"
+def formatar_peso(bytes_total):
+    if bytes_total < 1024 * 1024:
+        return f"{bytes_total / 1024:.1f} KB"
+    return f"{bytes_total / (1024 * 1024):.2f} MB"
 
 
-def analyze_boxes(pdf_bytes):
-    result = []
+def linha(label, valor):
+    st.markdown(
+        f"""
+        <div class="info-row">
+            <div class="info-label">{escape(str(label))}</div>
+            <div class="info-value">{escape(str(valor))}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def nota(texto):
+    st.markdown(
+        f'<div class="info-note">⚠️ {escape(str(texto))}</div>',
+        unsafe_allow_html=True
+    )
+
+
+def separador():
+    st.markdown(
+        '<div class="section-line"></div>',
+        unsafe_allow_html=True
+    )
+
+
+def checkbox_visual(label, ativo):
+    classe = "cor-box ativo" if ativo else "cor-box"
+    check = "✓" if ativo else ""
+
+    return (
+        f'<div class="cor-item">'
+        f'<span class="{classe}">{check}</span>'
+        f'<span>{label}</span>'
+        f'</div>'
+    )
+
+
+def mostrar_separacoes(cores):
+    st.markdown(
+        '<div class="info-label">Separações detectadas</div>',
+        unsafe_allow_html=True
+    )
+
+    rgb_label = 'RGB <span class="rgb-alerta">!</span>' if cores["RGB"] else "RGB"
+
+    html = (
+        '<div class="separacoes-grid">'
+        '<div class="separacoes-col">'
+        f'{checkbox_visual("Ciano", cores["C"])}'
+        f'{checkbox_visual("Magenta", cores["M"])}'
+        f'{checkbox_visual("Amarelo", cores["Y"])}'
+        f'{checkbox_visual("Preto", cores["K"])}'
+        '</div>'
+        '<div class="separacoes-col">'
+        f'{checkbox_visual(rgb_label, cores["RGB"])}'
+        f'{checkbox_visual("Pantones / especiais", bool(cores["SPOTS"]))}'
+        '</div>'
+        '</div>'
+    )
+
+    st.markdown(html, unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="info-label">Pantones / cores especiais</div>',
+        unsafe_allow_html=True
+    )
+
+    if cores["SPOTS"]:
+        st.markdown(
+            f'<div class="pantone-lista">{escape(", ".join(cores["SPOTS"]))}</div>',
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            '<div class="pantone-lista">Nenhuma detectada</div>',
+            unsafe_allow_html=True
+        )
+
+
+def analisar_boxes(pdf_bytes):
+    paginas = []
 
     with pikepdf.open(BytesIO(pdf_bytes)) as pdf:
-        for index, page in enumerate(pdf.pages, start=1):
-            media = page.get("/MediaBox")
-            trim = page.get("/TrimBox")
-            bleed = page.get("/BleedBox")
-            crop = page.get("/CropBox")
+        for numero, pagina in enumerate(pdf.pages, start=1):
+            media = pagina.get("/MediaBox")
+            trim = pagina.get("/TrimBox")
+            bleed = pagina.get("/BleedBox")
+            crop = pagina.get("/CropBox")
 
             media_mm = box_to_mm(media)
             trim_mm = box_to_mm(trim) if trim else media_mm
             bleed_mm = box_to_mm(bleed) if bleed else media_mm
             crop_mm = box_to_mm(crop) if crop else media_mm
 
-            result.append({
-                "page": index,
-                "media": media_mm,
-                "trim": trim_mm,
-                "bleed": bleed_mm,
-                "crop": crop_mm,
-                "has_trim": trim is not None,
-                "has_bleed": bleed is not None,
-                "has_crop": crop is not None
-            })
+            paginas.append(
+                {
+                    "pagina": numero,
+                    "media": media_mm,
+                    "trim": trim_mm,
+                    "bleed": bleed_mm,
+                    "crop": crop_mm,
+                    "tem_trim": trim is not None,
+                    "tem_bleed": bleed is not None,
+                    "tem_crop": crop is not None,
+                }
+            )
 
-    return result
+    return paginas
 
 
-def detect_colors(pdf_bytes):
-    text = pdf_bytes.decode("latin-1", errors="ignore")
+def nome_pdf_para_texto(nome):
+    nome = str(nome).replace("/", "")
 
-    detected = {
+    def trocar_hex(match):
+        try:
+            return chr(int(match.group(1), 16))
+        except Exception:
+            return ""
+
+    return re.sub(r"#([0-9A-Fa-f]{2})", trocar_hex, nome).strip()
+
+
+def analisar_color_space(color_space, resultado):
+    try:
+        if isinstance(color_space, pikepdf.Name):
+            nome = nome_pdf_para_texto(color_space)
+
+            if nome == "DeviceCMYK":
+                resultado["CMYK"] = True
+                resultado["C"] = True
+                resultado["M"] = True
+                resultado["Y"] = True
+                resultado["K"] = True
+            elif nome == "DeviceRGB":
+                resultado["RGB"] = True
+            elif nome == "DeviceGray":
+                resultado["GRAY"] = True
+
+        elif isinstance(color_space, pikepdf.Array) and len(color_space) > 0:
+            tipo = nome_pdf_para_texto(color_space[0])
+
+            if tipo == "Separation" and len(color_space) >= 3:
+                nome_cor = nome_pdf_para_texto(color_space[1])
+
+                if nome_cor in ["Cyan", "C"]:
+                    resultado["C"] = True
+                elif nome_cor in ["Magenta", "M"]:
+                    resultado["M"] = True
+                elif nome_cor in ["Yellow", "Y"]:
+                    resultado["Y"] = True
+                elif nome_cor in ["Black", "K"]:
+                    resultado["K"] = True
+                elif nome_cor not in PROCESS_COLORS:
+                    resultado["SPOTS"].add(nome_cor)
+
+                analisar_color_space(color_space[2], resultado)
+
+            elif tipo == "DeviceN" and len(color_space) >= 3:
+                nomes = color_space[1]
+
+                if isinstance(nomes, pikepdf.Array):
+                    for item in nomes:
+                        nome_cor = nome_pdf_para_texto(item)
+
+                        if nome_cor in ["Cyan", "C"]:
+                            resultado["C"] = True
+                        elif nome_cor in ["Magenta", "M"]:
+                            resultado["M"] = True
+                        elif nome_cor in ["Yellow", "Y"]:
+                            resultado["Y"] = True
+                        elif nome_cor in ["Black", "K"]:
+                            resultado["K"] = True
+                        elif nome_cor not in PROCESS_COLORS:
+                            resultado["SPOTS"].add(nome_cor)
+
+                analisar_color_space(color_space[2], resultado)
+
+            elif tipo in ["ICCBased", "CalRGB", "CalGray", "Lab", "Indexed", "Pattern"]:
+                texto = str(color_space)
+
+                if "DeviceCMYK" in texto:
+                    resultado["CMYK"] = True
+                    resultado["C"] = True
+                    resultado["M"] = True
+                    resultado["Y"] = True
+                    resultado["K"] = True
+                if "DeviceRGB" in texto:
+                    resultado["RGB"] = True
+                if "DeviceGray" in texto:
+                    resultado["GRAY"] = True
+
+    except Exception:
+        pass
+
+
+def analisar_recursos_cores(recursos, resultado, visitados=None):
+    if visitados is None:
+        visitados = set()
+
+    if recursos is None:
+        return
+
+    try:
+        obj_id = id(recursos)
+        if obj_id in visitados:
+            return
+        visitados.add(obj_id)
+
+        color_spaces = recursos.get("/ColorSpace", {})
+
+        if isinstance(color_spaces, pikepdf.Dictionary):
+            for _, color_space in color_spaces.items():
+                analisar_color_space(color_space, resultado)
+
+        xobjects = recursos.get("/XObject", {})
+
+        if isinstance(xobjects, pikepdf.Dictionary):
+            for _, xobj in xobjects.items():
+                try:
+                    sub_recursos = xobj.get("/Resources")
+                    analisar_recursos_cores(sub_recursos, resultado, visitados)
+                except Exception:
+                    pass
+
+    except Exception:
+        pass
+
+
+def detectar_cores(pdf_bytes):
+    resultado = {
         "CMYK": False,
         "RGB": False,
-        "Gray": False,
-        "Spot": False,
-        "Pantones": []
+        "GRAY": False,
+        "C": False,
+        "M": False,
+        "Y": False,
+        "K": False,
+        "SPOTS": set(),
     }
 
-    cmyk_signals = ["/DeviceCMYK", "/ICCBased", "CMYK"]
-    rgb_signals = ["/DeviceRGB", "RGB"]
-    gray_signals = ["/DeviceGray", "Gray"]
-    spot_signals = ["/Separation", "/DeviceN", "/Spot"]
+    texto = pdf_bytes.decode("latin-1", errors="ignore")
 
-    detected["CMYK"] = any(signal in text for signal in cmyk_signals)
-    detected["RGB"] = any(signal in text for signal in rgb_signals)
-    detected["Gray"] = any(signal in text for signal in gray_signals)
-    detected["Spot"] = any(signal in text for signal in spot_signals)
+    if "/DeviceCMYK" in texto or "DeviceCMYK" in texto:
+        resultado["CMYK"] = True
+        resultado["C"] = True
+        resultado["M"] = True
+        resultado["Y"] = True
+        resultado["K"] = True
 
-    possible_pantones = []
-    for part in text.split("/"):
-        if "PANTONE" in part.upper():
-            name = part.split()[0]
-            name = name.replace("#20", " ")
-            possible_pantones.append(name)
+    if "/DeviceRGB" in texto or "DeviceRGB" in texto:
+        resultado["RGB"] = True
 
-    detected["Pantones"] = sorted(set(possible_pantones))
+    if "/DeviceGray" in texto or "DeviceGray" in texto:
+        resultado["GRAY"] = True
 
-    return detected
+    with pikepdf.open(BytesIO(pdf_bytes)) as pdf:
+        for pagina in pdf.pages:
+            recursos = pagina.get("/Resources")
+            analisar_recursos_cores(recursos, resultado)
+
+    spots_limpos = sorted(
+        cor for cor in resultado["SPOTS"]
+        if cor and cor not in PROCESS_COLORS
+    )
+
+    return {
+        "CMYK": resultado["CMYK"],
+        "RGB": resultado["RGB"],
+        "GRAY": resultado["GRAY"],
+        "C": resultado["C"],
+        "M": resultado["M"],
+        "Y": resultado["Y"],
+        "K": resultado["K"],
+        "SPOTS": spots_limpos,
+    }
 
 
-def show_field(label, value):
-    st.markdown(f"""
-    <div class="label">{label}</div>
-    <div class="value">{value}</div>
-    """, unsafe_allow_html=True)
+def cor_escura(cor):
+    if not cor:
+        return True
+
+    try:
+        return all(c <= 0.25 for c in cor[:3])
+    except Exception:
+        return False
 
 
-st.title("📄 M87 • INFO PDF")
+def detectar_marcas_de_corte(doc):
+    total_linhas_suspeitas = 0
 
-st.markdown(
-    "Sobe um PDF e a ferramenta lê medidas, caixas técnicas, metadados e indícios de cor. "
-    "Para pré-impressão, ela mostra também quando alguma informação não está realmente definida no arquivo."
+    for pagina in doc:
+        desenhos = pagina.get_drawings()
+
+        for desenho in desenhos:
+            largura_linha = desenho.get("width", 0)
+
+            if largura_linha is None or largura_linha > 1.2:
+                continue
+
+            if not cor_escura(desenho.get("color")):
+                continue
+
+            for item in desenho.get("items", []):
+                if not item or item[0] != "l":
+                    continue
+
+                p1 = item[1]
+                p2 = item[2]
+
+                dx = abs(p2.x - p1.x)
+                dy = abs(p2.y - p1.y)
+
+                comprimento = max(dx, dy)
+                comprimento_mm = pt_to_mm(comprimento)
+
+                eh_horizontal = dy <= mm_to_pt(0.3) and dx > 0
+                eh_vertical = dx <= mm_to_pt(0.3) and dy > 0
+
+                if not (eh_horizontal or eh_vertical):
+                    continue
+
+                if 2 <= comprimento_mm <= 25:
+                    total_linhas_suspeitas += 1
+
+    return total_linhas_suspeitas >= 4
+
+
+st.caption(
+    "Envie um PDF para ler medidas, caixas técnicas, páginas, metadados e indícios de cor."
 )
 
-uploaded_file = st.file_uploader("Enviar PDF", type=["pdf"])
+arquivo = st.file_uploader(
+    "Enviar arquivo PDF",
+    type=["pdf"],
+    label_visibility="collapsed"
+)
 
-if uploaded_file:
-    pdf_bytes = uploaded_file.read()
+if arquivo:
+    pdf_bytes = arquivo.read()
 
     try:
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         metadata = doc.metadata or {}
-        boxes = analyze_boxes(pdf_bytes)
-        colors = detect_colors(pdf_bytes)
+        boxes = analisar_boxes(pdf_bytes)
+        cores = detectar_cores(pdf_bytes)
+        marcas_corte = detectar_marcas_de_corte(doc)
 
-        first_page = boxes[0]
-        media_w, media_h = first_page["media"]
-        trim_w, trim_h = first_page["trim"]
-        bleed_w, bleed_h = first_page["bleed"]
+        primeira = boxes[0]
 
-        col_preview, col_info = st.columns([1, 2])
+        media_l, media_a = primeira["media"]
+        trim_l, trim_a = primeira["trim"]
+
+        col_preview, col_info = st.columns([0.65, 1.0], gap="medium")
 
         with col_preview:
-            st.markdown('<div class="info-card">', unsafe_allow_html=True)
+            pagina = doc[0]
+            pix = pagina.get_pixmap(matrix=fitz.Matrix(0.40, 0.40), alpha=False)
 
-            page = doc[0]
-            pix = page.get_pixmap(matrix=fitz.Matrix(0.25, 0.25), alpha=False)
-            st.image(pix.tobytes("png"), caption="Preview da primeira página")
+            st.image(pix.tobytes("png"))
 
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="preview-caption">Preview da primeira página</div>',
+                unsafe_allow_html=True
+            )
 
         with col_info:
-            st.markdown('<div class="info-card">', unsafe_allow_html=True)
+            linha("Nome do arquivo", arquivo.name)
+            linha("Peso", formatar_peso(len(pdf_bytes)))
+            linha("Orientação", orientacao(media_l, media_a))
+            linha("Criado em", metadata.get("creator") or "Não informado")
+            linha("Data de criação", formatar_data_pdf(metadata.get("creationDate")))
+            linha("Quantidade de páginas", str(len(doc)))
 
-            show_field("Arquivo", uploaded_file.name)
-            show_field("Peso", get_file_size(len(pdf_bytes)))
-            show_field("Medida do PDF", format_mm(media_w, media_h))
-            show_field("Orientação", get_orientation(media_w, media_h))
-            show_field("Medida da marca de corte / Trim", format_mm(trim_w, trim_h))
+            separador()
 
-            if first_page["has_trim"]:
-                st.markdown('<div class="ok">TrimBox definido no PDF.</div>', unsafe_allow_html=True)
-            else:
-                st.markdown('<div class="warning">⚠️ TrimBox não definido. Usando MediaBox como referência.</div>', unsafe_allow_html=True)
+            linha("Medida do PDF", formatar_mm(media_l, media_a))
+            linha("Medida da marca de corte / Trim", formatar_mm(trim_l, trim_a))
+            linha("Marcas de corte detectadas", "Sim" if marcas_corte else "Não")
 
-            show_field("Bleed", format_mm(bleed_w, bleed_h))
+            if not primeira["tem_trim"]:
+                nota("TrimBox não definido. Usando MediaBox como referência.")
 
-            if first_page["has_bleed"]:
-                st.markdown('<div class="ok">BleedBox definido no PDF.</div>', unsafe_allow_html=True)
-            else:
-                st.markdown('<div class="warning">⚠️ BleedBox não definido. Usando MediaBox como referência.</div>', unsafe_allow_html=True)
+            separador()
 
-            show_field("Páginas", str(len(doc)))
-            show_field("Data de criação", format_pdf_date(metadata.get("creationDate")))
-            show_field("Criado em", metadata.get("creator") or "Não informado")
-            show_field("Produtor PDF", metadata.get("producer") or "Não informado")
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown('<div class="info-card">', unsafe_allow_html=True)
-        st.subheader("Cores detectadas")
-
-        color_list = []
-
-        if colors["CMYK"]:
-            color_list.append("CMYK")
-        if colors["RGB"]:
-            color_list.append("RGB")
-        if colors["Gray"]:
-            color_list.append("Gray / Escala de cinza")
-        if colors["Spot"]:
-            color_list.append("Spot / Cor especial")
-
-        if color_list:
-            show_field("Espaços de cor encontrados", ", ".join(color_list))
-        else:
-            show_field("Espaços de cor encontrados", "Nenhum sinal claro detectado")
-
-        if colors["Pantones"]:
-            show_field("Pantones / Cores especiais", ", ".join(colors["Pantones"]))
-        else:
-            show_field("Pantones / Cores especiais", "Nenhuma detectada")
-
-        st.markdown("""
-        <div class="warning">
-        ⚠️ A leitura de cores é uma análise por sinais internos do PDF. 
-        Para produção crítica, conferir no Acrobat, PitStop ou Callas.
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
+            mostrar_separacoes(cores)
 
         if len(doc) > 1:
-            st.markdown('<div class="info-card">', unsafe_allow_html=True)
-            st.subheader("Medidas por página")
+            separador()
+            st.markdown("### Medidas por página")
 
             for item in boxes:
-                st.markdown(f"""
-                <div class="small">
-                Página {item["page"]} — 
-                PDF: {format_mm(*item["media"])} | 
-                Trim: {format_mm(*item["trim"])} | 
-                Bleed: {format_mm(*item["bleed"])}
-                </div>
-                """, unsafe_allow_html=True)
+                st.caption(
+                    f'Página {item["pagina"]} — '
+                    f'PDF: {formatar_mm(*item["media"])} | '
+                    f'Trim: {formatar_mm(*item["trim"])} | '
+                    f'Bleed: {formatar_mm(*item["bleed"])}'
+                )
 
-            st.markdown('</div>', unsafe_allow_html=True)
-
-    except Exception as error:
+    except Exception as erro:
         st.error("Não consegui ler este PDF com segurança.")
-        st.code(str(error))
+        st.code(str(erro))
+
 else:
-    st.info("Envia um PDF para começar a análise.")
+    st.markdown(
+        """
+<div style="margin-top:34px;padding:34px;border:1px dashed rgba(208,147,29,.4);border-radius:18px;text-align:center;background:rgba(208,147,29,.035);">
+
+<div style="width:42px;height:52px;margin:0 auto 14px auto;border:3px solid #D0931D;border-radius:4px;position:relative;">
+<div style="width:16px;height:3px;background:#D0931D;margin:14px auto 0 auto;"></div>
+<div style="width:22px;height:3px;background:#D0931D;margin:8px auto 0 auto;"></div>
+</div>
+
+<div style="color:white;font-size:16px;font-weight:600;margin-bottom:6px;">
+Envie um PDF para começar
+</div>
+
+<div style="color:rgba(255,255,255,.55);font-size:13px;">
+A análise aparecerá aqui automaticamente.
+</div>
+
+</div>
+        """,
+        unsafe_allow_html=True
+    )
