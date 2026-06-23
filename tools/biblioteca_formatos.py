@@ -38,7 +38,7 @@ st.markdown(
         }
 
         [data-testid="stHorizontalBlock"] {
-            gap: 0.3rem !important;
+            gap: 0.6rem !important;
         }
 
         [data-testid="column"] {
@@ -117,9 +117,11 @@ aba_atual = st.segmented_control(
     "Área da ferramenta",
     ["Proporção", "Biblioteca"],
     default=st.session_state["formatos_aba_atual"],
-    key="formatos_aba_atual",
+    key="formatos_aba_visual",
     label_visibility="collapsed"
 )
+
+st.session_state["formatos_aba_atual"] = aba_atual
 
 
 if aba_atual == "Proporção":
@@ -128,12 +130,9 @@ if aba_atual == "Proporção":
     st.caption(
         """
         Redimensione uma arte sem distorcer. (Consulte formatos padrão na Biblioteca.)
-
-        • Informe a medida original
-
-        • Escolha calcular por nova medida ou escala
-
-        • Digite a medida desejada
+        -> Informe a medida original
+        -> Escolha calcular por nova medida ou escala
+        -> Digite a medida desejada
         """
     )
 
@@ -157,21 +156,29 @@ if aba_atual == "Proporção":
             key="formato_altura_original"
         )
 
-    modo = st.segmented_control(
-        "Calcular por",
-        ["Nova medida", "Escala %"],
-        default="Nova medida",
-        key="formato_modo_calculo"
-    )
+    col_modo, col_base = st.columns(2)
 
-    if modo == "Nova medida":
-        base_calculo = st.segmented_control(
-            "Redimensionar pela",
-            ["Largura", "Altura"],
-            default="Largura",
-            key="formato_base_calculo"
+    with col_modo:
+        modo = st.segmented_control(
+            "Calcular por",
+            ["Nova medida", "Escala %"],
+            default="Nova medida",
+            key="formato_modo_calculo"
         )
 
+    with col_base:
+        if modo == "Nova medida":
+            base_calculo = st.segmented_control(
+                "Redimensionar pela",
+                ["Largura", "Altura"],
+                default="Largura",
+                key="formato_base_calculo"
+            )
+        else:
+            base_calculo = "Largura"
+            st.empty()
+
+    if modo == "Nova medida":
         nova_medida = st.number_input(
             f"Nova {base_calculo.lower()} desejada (mm)",
             min_value=0.0,
