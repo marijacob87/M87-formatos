@@ -7,3 +7,25 @@ git push
 ## Comando para rodar localmente
 python3 -m streamlit run app.py
 -------------------------
+## IDEIAS NOVAS 
+
+> Ferramenta de montagem para formatos gráficos (70x100) etc 
+
+> Ferramenta que analisa o pdf e traz todos os dados 
+	Medida do trim 
+	cores e se tem pantone
+	Em que programa foi criado
+	Quantas paginas 
+	Tem marcas de corte? 
+	Pequena visualização do que tem no PDF 
+	
+> Ferramenta para montar folha de impressão de cartão de visita
+	Tamanho do papel 
+	sobe o arquivo e volta com o arquivo montado 
+
+> Visualizador de paginação de revista 
+
+> Gerador de Código de barras em EPS e IMAGEM
+
+> Quais outros checklists podem ser criados?
+	
