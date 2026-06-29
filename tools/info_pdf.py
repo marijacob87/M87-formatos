@@ -14,10 +14,17 @@ MM_PER_POINT = 25.4 / 72
 POINT_PER_MM = 72 / 25.4
 
 PROCESS_COLORS = {
-    "Cyan", "Magenta", "Yellow", "Black",
-    "C", "M", "Y", "K",
-    "All", "None"
+    "Cyan": "C",
+    "C": "C",
+    "Magenta": "M",
+    "M": "M",
+    "Yellow": "Y",
+    "Y": "Y",
+    "Black": "K",
+    "K": "K",
 }
+
+IGNORE_SPOT_NAMES = {"All", "None", "Registration"}
 
 
 titulo_tool("Info PDF")
@@ -114,7 +121,7 @@ st.markdown(
             border-color: #D0931D;
         }
 
-            .rgb-alerta {
+        .rgb-alerta {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -146,10 +153,9 @@ st.markdown(
             color: rgba(255,255,255,0.88);
             font-size: 0.88rem;
             font-weight: 500;
-            margin-height: 1.6;
+            line-height: 1.6;
             margin-top: 2px;
             margin-bottom: 10px;
-           
         }
 
         [data-testid="stFileUploader"] {
@@ -294,7 +300,6 @@ def mostrar_separacoes(cores):
             f'<div class="pantone-lista">{lista_pantones}</div>',
             unsafe_allow_html=True
         )
-
     else:
         st.markdown(
             '<div class="pantone-lista">Nenhuma detectada</div>',
@@ -345,17 +350,40 @@ def nome_pdf_para_texto(nome):
     return re.sub(r"#([0-9A-Fa-f]{2})", trocar_hex, nome).strip()
 
 
-def analisar_color_space(color_space, resultado):
+def marcar_processo(nome_cor, resultado):
+    nome_cor = nome_pdf_para_texto(nome_cor)
+
+    if nome_cor in PROCESS_COLORS:
+        canal = PROCESS_COLORS[nome_cor]
+        resultado[canal] = True
+        resultado["CMYK"] = True
+        return
+
+    if nome_cor and nome_cor not in IGNORE_SPOT_NAMES:
+        resultado["SPOTS"].add(nome_cor)
+
+
+def marcar_cmyk(c, m, y, k, resultado):
+    if c > 0:
+        resultado["C"] = True
+    if m > 0:
+        resultado["M"] = True
+    if y > 0:
+        resultado["Y"] = True
+    if k > 0:
+        resultado["K"] = True
+
+    if c > 0 or m > 0 or y > 0 or k > 0:
+        resultado["CMYK"] = True
+
+
+def analisar_color_space(color_space, resultado, mapa_cores=None):
     try:
         if isinstance(color_space, pikepdf.Name):
             nome = nome_pdf_para_texto(color_space)
 
             if nome == "DeviceCMYK":
                 resultado["CMYK"] = True
-                resultado["C"] = True
-                resultado["M"] = True
-                resultado["Y"] = True
-                resultado["K"] = True
             elif nome == "DeviceRGB":
                 resultado["RGB"] = True
             elif nome == "DeviceGray":
@@ -366,49 +394,23 @@ def analisar_color_space(color_space, resultado):
 
             if tipo == "Separation" and len(color_space) >= 3:
                 nome_cor = nome_pdf_para_texto(color_space[1])
-
-                if nome_cor in ["Cyan", "C"]:
-                    resultado["C"] = True
-                elif nome_cor in ["Magenta", "M"]:
-                    resultado["M"] = True
-                elif nome_cor in ["Yellow", "Y"]:
-                    resultado["Y"] = True
-                elif nome_cor in ["Black", "K"]:
-                    resultado["K"] = True
-                elif nome_cor not in PROCESS_COLORS:
-                    resultado["SPOTS"].add(nome_cor)
-
-                analisar_color_space(color_space[2], resultado)
+                marcar_processo(nome_cor, resultado)
+                analisar_color_space(color_space[2], resultado, mapa_cores)
 
             elif tipo == "DeviceN" and len(color_space) >= 3:
                 nomes = color_space[1]
 
                 if isinstance(nomes, pikepdf.Array):
                     for item in nomes:
-                        nome_cor = nome_pdf_para_texto(item)
+                        marcar_processo(nome_pdf_para_texto(item), resultado)
 
-                        if nome_cor in ["Cyan", "C"]:
-                            resultado["C"] = True
-                        elif nome_cor in ["Magenta", "M"]:
-                            resultado["M"] = True
-                        elif nome_cor in ["Yellow", "Y"]:
-                            resultado["Y"] = True
-                        elif nome_cor in ["Black", "K"]:
-                            resultado["K"] = True
-                        elif nome_cor not in PROCESS_COLORS:
-                            resultado["SPOTS"].add(nome_cor)
+                analisar_color_space(color_space[2], resultado, mapa_cores)
 
-                analisar_color_space(color_space[2], resultado)
-
-            elif tipo in ["ICCBased", "CalRGB", "CalGray", "Lab", "Indexed", "Pattern"]:
+            else:
                 texto = str(color_space)
 
                 if "DeviceCMYK" in texto:
                     resultado["CMYK"] = True
-                    resultado["C"] = True
-                    resultado["M"] = True
-                    resultado["Y"] = True
-                    resultado["K"] = True
                 if "DeviceRGB" in texto:
                     resultado["RGB"] = True
                 if "DeviceGray" in texto:
@@ -418,7 +420,7 @@ def analisar_color_space(color_space, resultado):
         pass
 
 
-def analisar_recursos_cores(recursos, resultado, visitados=None):
+def coletar_mapa_cores(recursos, mapa_cores, resultado, visitados=None):
     if visitados is None:
         visitados = set()
 
@@ -434,8 +436,10 @@ def analisar_recursos_cores(recursos, resultado, visitados=None):
         color_spaces = recursos.get("/ColorSpace", {})
 
         if isinstance(color_spaces, pikepdf.Dictionary):
-            for _, color_space in color_spaces.items():
-                analisar_color_space(color_space, resultado)
+            for nome, color_space in color_spaces.items():
+                chave = nome_pdf_para_texto(nome)
+                mapa_cores[chave] = color_space
+                analisar_color_space(color_space, resultado, mapa_cores)
 
         xobjects = recursos.get("/XObject", {})
 
@@ -443,7 +447,240 @@ def analisar_recursos_cores(recursos, resultado, visitados=None):
             for _, xobj in xobjects.items():
                 try:
                     sub_recursos = xobj.get("/Resources")
-                    analisar_recursos_cores(sub_recursos, resultado, visitados)
+                    coletar_mapa_cores(sub_recursos, mapa_cores, resultado, visitados)
+                except Exception:
+                    pass
+
+    except Exception:
+        pass
+
+
+def tokenizar_pdf_stream(texto):
+    padrao = re.compile(
+        r"/[^\s\[\]\(\)<>/%]+|"
+        r"-?\d*\.?\d+(?:[eE][+-]?\d+)?|"
+        r"[A-Za-z\*]+|"
+        r"\[|\]"
+    )
+    return padrao.findall(texto)
+
+
+def resolver_color_space(nome, mapa_cores):
+    nome = nome_pdf_para_texto(nome)
+
+    if nome in ["DeviceCMYK", "DeviceRGB", "DeviceGray"]:
+        return nome
+
+    return mapa_cores.get(nome)
+
+
+def analisar_scn(valores, color_space_atual, mapa_cores, resultado):
+    cs = resolver_color_space(color_space_atual, mapa_cores)
+
+    if not cs:
+        return
+
+    if isinstance(cs, str):
+        if cs == "DeviceCMYK" and len(valores) >= 4:
+            marcar_cmyk(valores[-4], valores[-3], valores[-2], valores[-1], resultado)
+
+        elif cs == "DeviceRGB" and len(valores) >= 3:
+            if valores[-3] > 0 or valores[-2] > 0 or valores[-1] > 0:
+                resultado["RGB"] = True
+
+        elif cs == "DeviceGray" and len(valores) >= 1:
+            if valores[-1] > 0:
+                resultado["GRAY"] = True
+
+        return
+
+    try:
+        if isinstance(cs, pikepdf.Array) and len(cs) > 0:
+            tipo = nome_pdf_para_texto(cs[0])
+
+            if tipo == "Separation" and len(cs) >= 2:
+                nome_cor = nome_pdf_para_texto(cs[1])
+                tint = valores[-1] if valores else 0
+
+                if tint > 0:
+                    marcar_processo(nome_cor, resultado)
+
+            elif tipo == "DeviceN" and len(cs) >= 2:
+                nomes = cs[1]
+
+                if isinstance(nomes, pikepdf.Array):
+                    usados = valores[-len(nomes):]
+
+                    for nome_cor, tint in zip(nomes, usados):
+                        if tint > 0:
+                            marcar_processo(nome_pdf_para_texto(nome_cor), resultado)
+
+            elif tipo == "ICCBased":
+                texto = str(cs)
+
+                if "DeviceCMYK" in texto and len(valores) >= 4:
+                    marcar_cmyk(valores[-4], valores[-3], valores[-2], valores[-1], resultado)
+                elif "DeviceRGB" in texto and len(valores) >= 3:
+                    if valores[-3] > 0 or valores[-2] > 0 or valores[-1] > 0:
+                        resultado["RGB"] = True
+                elif "DeviceGray" in texto and len(valores) >= 1:
+                    if valores[-1] > 0:
+                        resultado["GRAY"] = True
+
+    except Exception:
+        pass
+
+
+def analisar_stream_pdf(conteudo, mapa_cores, resultado):
+    texto = conteudo.decode("latin-1", errors="ignore")
+    tokens = tokenizar_pdf_stream(texto)
+
+    operandos = []
+    cs_fill = "DeviceGray"
+    cs_stroke = "DeviceGray"
+
+    operadores = {
+        "k", "K", "rg", "RG", "g", "G",
+        "cs", "CS", "sc", "SC", "scn", "SCN"
+    }
+
+    for token in tokens:
+        if token not in operadores:
+            operandos.append(token)
+            continue
+
+        try:
+            if token == "k" and len(operandos) >= 4:
+                valores = [float(v) for v in operandos[-4:]]
+                marcar_cmyk(*valores, resultado)
+
+            elif token == "K" and len(operandos) >= 4:
+                valores = [float(v) for v in operandos[-4:]]
+                marcar_cmyk(*valores, resultado)
+
+            elif token == "rg" and len(operandos) >= 3:
+                r, g, b = [float(v) for v in operandos[-3:]]
+                if r > 0 or g > 0 or b > 0:
+                    resultado["RGB"] = True
+
+            elif token == "RG" and len(operandos) >= 3:
+                r, g, b = [float(v) for v in operandos[-3:]]
+                if r > 0 or g > 0 or b > 0:
+                    resultado["RGB"] = True
+
+            elif token == "g" and len(operandos) >= 1:
+                gray = float(operandos[-1])
+                if gray > 0:
+                    resultado["GRAY"] = True
+
+            elif token == "G" and len(operandos) >= 1:
+                gray = float(operandos[-1])
+                if gray > 0:
+                    resultado["GRAY"] = True
+
+            elif token == "cs" and operandos:
+                cs_fill = nome_pdf_para_texto(operandos[-1])
+
+            elif token == "CS" and operandos:
+                cs_stroke = nome_pdf_para_texto(operandos[-1])
+
+            elif token in ["sc", "scn"]:
+                valores = [
+                    float(v) for v in operandos
+                    if re.fullmatch(r"-?\d*\.?\d+(?:[eE][+-]?\d+)?", v)
+                ]
+                analisar_scn(valores, cs_fill, mapa_cores, resultado)
+
+            elif token in ["SC", "SCN"]:
+                valores = [
+                    float(v) for v in operandos
+                    if re.fullmatch(r"-?\d*\.?\d+(?:[eE][+-]?\d+)?", v)
+                ]
+                analisar_scn(valores, cs_stroke, mapa_cores, resultado)
+
+        except Exception:
+            pass
+
+        operandos = []
+
+
+def ler_bytes_conteudo_pagina(pagina):
+    conteudos = []
+
+    try:
+        contents = pagina.get("/Contents")
+
+        if contents is None:
+            return conteudos
+
+        if isinstance(contents, pikepdf.Array):
+            for item in contents:
+                try:
+                    conteudos.append(item.read_bytes())
+                except Exception:
+                    pass
+        else:
+            try:
+                conteudos.append(contents.read_bytes())
+            except Exception:
+                pass
+
+    except Exception:
+        pass
+
+    return conteudos
+
+
+def analisar_xobjects(recursos, mapa_cores, resultado, visitados=None):
+    if visitados is None:
+        visitados = set()
+
+    if recursos is None:
+        return
+
+    try:
+        xobjects = recursos.get("/XObject", {})
+
+        if not isinstance(xobjects, pikepdf.Dictionary):
+            return
+
+        for _, xobj in xobjects.items():
+            obj_id = id(xobj)
+
+            if obj_id in visitados:
+                continue
+
+            visitados.add(obj_id)
+
+            subtype = str(xobj.get("/Subtype", ""))
+
+            if subtype == "/Image":
+                color_space = xobj.get("/ColorSpace")
+                nome = nome_pdf_para_texto(color_space)
+
+                if "DeviceCMYK" in nome:
+                    resultado["CMYK"] = True
+                    resultado["C"] = True
+                    resultado["M"] = True
+                    resultado["Y"] = True
+                    resultado["K"] = True
+
+                elif "DeviceRGB" in nome:
+                    resultado["RGB"] = True
+
+                elif "DeviceGray" in nome:
+                    resultado["GRAY"] = True
+
+            else:
+                try:
+                    analisar_stream_pdf(xobj.read_bytes(), mapa_cores, resultado)
+                except Exception:
+                    pass
+
+                try:
+                    sub_recursos = xobj.get("/Resources")
+                    coletar_mapa_cores(sub_recursos, mapa_cores, resultado)
+                    analisar_xobjects(sub_recursos, mapa_cores, resultado, visitados)
                 except Exception:
                     pass
 
@@ -463,29 +700,21 @@ def detectar_cores(pdf_bytes):
         "SPOTS": set(),
     }
 
-    texto = pdf_bytes.decode("latin-1", errors="ignore")
-
-    if "/DeviceCMYK" in texto or "DeviceCMYK" in texto:
-        resultado["CMYK"] = True
-        resultado["C"] = True
-        resultado["M"] = True
-        resultado["Y"] = True
-        resultado["K"] = True
-
-    if "/DeviceRGB" in texto or "DeviceRGB" in texto:
-        resultado["RGB"] = True
-
-    if "/DeviceGray" in texto or "DeviceGray" in texto:
-        resultado["GRAY"] = True
-
     with pikepdf.open(BytesIO(pdf_bytes)) as pdf:
         for pagina in pdf.pages:
+            mapa_cores = {}
+
             recursos = pagina.get("/Resources")
-            analisar_recursos_cores(recursos, resultado)
+            coletar_mapa_cores(recursos, mapa_cores, resultado)
+
+            for conteudo in ler_bytes_conteudo_pagina(pagina):
+                analisar_stream_pdf(conteudo, mapa_cores, resultado)
+
+            analisar_xobjects(recursos, mapa_cores, resultado)
 
     spots_limpos = sorted(
         cor for cor in resultado["SPOTS"]
-        if cor and cor not in PROCESS_COLORS
+        if cor and cor not in IGNORE_SPOT_NAMES
     )
 
     return {

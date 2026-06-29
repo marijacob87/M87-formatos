@@ -5,9 +5,23 @@ def carregar_css():
     amarelo = "#D0931D"
     amarelo_hover = "#B8821A"
     fundo = "#0E1117"
+    
 
     return f"""
     <style>
+        .menu-ok {{
+            color: #35e66b !important;
+            font-size: 7px !important;
+            margin-right: 7px !important;
+            text-shadow: 0 0 8px rgba(53,230,107,0.75);
+
+        }}
+
+            .stApp {{
+            background-color: {fundo};
+
+        }}
+
         .stApp {{
             background-color: {fundo};
         }}
@@ -48,19 +62,19 @@ def carregar_css():
         section[data-testid="stSidebar"] a,
         section[data-testid="stSidebar"] a p,
         section[data-testid="stSidebar"] a span {{
-            font-size: 9px !important;
-            font-weight: 700 !important;
-            letter-spacing: 1.5px !important;
+            font-size: 10.5px !important;
+            font-weight: 800 !important;
+            letter-spacing: 1.8px !important;
             text-transform: uppercase !important;
-            color: rgba(255,255,255,0.72) !important;
-            line-height: 1.1 !important;
+            color: rgba(255,255,255,0.76) !important;
+            line-height: 1.35 !important;
             text-decoration: none !important;
         }}
 
         section[data-testid="stSidebar"] a {{
             border-radius: 10px !important;
-            padding: 4px 12px 4px 20px !important;
-            margin-bottom: 1px !important;
+            padding: 6px 12px 6px 20px !important;
+            margin-bottom: 4px !important;
             transition: all 0.18s ease !important;
         }}
 
@@ -191,5 +205,6 @@ def carregar_css():
         .stMarkdown li::marker {{
             color: {amarelo} !important;
         }}
+        
     </style>
     """
