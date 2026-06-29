@@ -33,6 +33,7 @@ paginas = {
     "FERRAMENTAS": [
         st.Page("tools/4_ferramentas/biblioteca_formatos.py", title="🟢 FORMATOS"),
         st.Page("tools/4_ferramentas/info_pdf.py", title="🟢 INFO PDF"),
+        st.Page("tools/4_ferramentas/barcodegenerator.py", title="EAN13 e QRCODE"),
     ],
 }
 
