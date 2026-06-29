@@ -13,61 +13,65 @@ aplicar_estilo_global()
 paginas = {
     "ORÇAMENTOS": [
         st.Page(
-            "tools/novo_orcamento.py",
+            "tools/1_orcamentos/novo_orcamento.py",
             title="NOVO ORÇAMENTO"
         ),
         st.Page(
-            "tools/orcamento_aprovado.py",
+            "tools/1_orcamentos/orcamento_aprovado.py",
             title="ORÇAMENTO APROVADO"
         ),
         st.Page(
-            "tools/cadastro_clientes.py",
+            "tools/1_orcamentos/cadastro_clientes.py",
             title="CADASTRO DE CLIENTES"
         ),
     ],
 
     "CALCULADORAS": [
         st.Page(
-            "tools/calculadora_formatos.py",
+            "tools/2_calculadoras/calculadora_formatos.py",
             title="🟢 FORMATOS (MONTAGENS)",
             default=True
         ),
         st.Page(
-            "tools/peso_papel.py",
+            "tools/2_calculadoras/peso_papel.py",
             title="🟢 PESO DE PAPEL"
         ),
         st.Page(
-            "tools/area_m2.py",
+            "tools/2_calculadoras/area_m2.py",
             title="🟢 ÁREA EM M²"
         ),
         st.Page(
-            "tools/preco_papel.py",
+            "tools/2_calculadoras/preco_papel.py",
             title="🟢 PREÇO DO PAPEL"
         ),
     ],
 
     "CHECKLISTS": [
         st.Page(
-            "tools/checklist_pre_impressao.py",
+            "tools/3_checklists/checklist_pre_impressao.py",
             title="🟢 PRÉ-IMPRESSÃO"
         ),
         st.Page(
-            "tools/checklist_saida_producao.py",
-            title=" SAÍDA PARA PRODUÇÃO"
+            "tools/3_checklists/checklist_saida_producao.py",
+            title="🟢 SAÍDA PARA PRODUÇÃO"
         ),
         st.Page(
-            "tools/checklist_pfi.py",
-            title=" CORTE / VINCO / PFI"
+            "tools/3_checklists/checklist_pfi.py",
+            title="🟢 CORTE / VINCO / PFI"
         ),
     ],
 
     "FERRAMENTAS": [
         st.Page(
-            "tools/biblioteca_formatos.py",
+            "tools/4_ferramentas/biblioteca_formatos.py",
             title="🟢 FORMATOS"
         ),
         st.Page(
-            "tools/info_pdf.py",
+            "tools/4_ferramentas/formatos.py",
+            title="🟢 FORMATOS PROPORCIONAIS"
+        ),
+        st.Page(
+            "tools/4_ferramentas/info_pdf.py",
             title="🟢 INFO PDF"
         ),
     ],
