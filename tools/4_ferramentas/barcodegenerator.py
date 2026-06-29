@@ -364,7 +364,7 @@ def svg_para_base64(svg_bytes):
 # INTERFACE
 # =========================
 
-titulo_tool("Código de Barras")
+
 
 st.markdown(
     """
@@ -421,8 +421,7 @@ tab_ean, tab_qr, tab_reader = st.tabs(
 # =========================
 
 with tab_ean:
-    st.markdown("### Gerador EAN-13")
-
+    
     codigo_ean = st.text_input(
         "Digite 12 ou 13 dígitos para gerar o preview",
         placeholder="Ex.: 590123412345",
@@ -448,7 +447,7 @@ with tab_ean:
 
     if codigo_ean:
         if ean_final:
-            st.success(mensagem)
+            # st.success(mensagem)
 
             cor_fundo = "transparent" if fundo_transparente else cor_fundo_picker
             largura_final = 37.29 * (escala / 100)

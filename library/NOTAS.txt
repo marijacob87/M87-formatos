@@ -8,7 +8,12 @@ git status
 ## Comando para rodar localmente
 python3 -m streamlit run app.py
 -------------------------
+
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
 ## IDEIAS NOVAS 
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
 > Ferramenta de montagem para formatos gráficos (70x100) etc 
 	
@@ -22,13 +27,13 @@ python3 -m streamlit run app.py
 
 > Quais outros checklists podem ser criados?
 	
+> Leitor de código (tipo modo historia para explicar o codigo criado)
 
 
 
 
 
-
-OK -------------------------
+--------- OK -------------------------
 > Ferramenta que analisa o pdf e traz todos os dados 
 Medida do trim 
 cores e se tem pantone 
