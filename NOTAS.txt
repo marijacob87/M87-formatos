@@ -11,14 +11,6 @@ python3 -m streamlit run app.py
 ## IDEIAS NOVAS 
 
 > Ferramenta de montagem para formatos gráficos (70x100) etc 
-
-> Ferramenta que analisa o pdf e traz todos os dados 
-	Medida do trim 
-	cores e se tem pantone
-	Em que programa foi criado
-	Quantas paginas 
-	Tem marcas de corte? 
-	Pequena visualização do que tem no PDF 
 	
 > Ferramenta para montar folha de impressão de cartão de visita
 	Tamanho do papel 
@@ -30,3 +22,17 @@ python3 -m streamlit run app.py
 
 > Quais outros checklists podem ser criados?
 	
+
+
+
+
+
+
+OK -------------------------
+> Ferramenta que analisa o pdf e traz todos os dados 
+Medida do trim 
+cores e se tem pantone 
+Em que programa foi criado  
+Quantas paginas  
+Tem marcas de corte?  
+Pequena visualização do que tem no PDF   
