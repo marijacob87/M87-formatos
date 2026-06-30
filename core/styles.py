@@ -11,8 +11,8 @@ def carregar_css():
     <style>
         .menu-ok {{
             color: #35e66b !important;
-            font-size: 7px !important;
-            margin-right: 7px !important;
+            font-size: 8px !important;
+            margin-right: 8px !important;
             text-shadow: 0 0 8px rgba(53,230,107,0.75);
 
         }}
