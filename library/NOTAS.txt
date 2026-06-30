@@ -1,15 +1,16 @@
 ## Comando para atualizar o GITHUB 
 git status
 git add .
-git commit -m "o que foi alterado"
+git commit -m "Codigo de barras funcional"
 git push
 git status
 -------------------------
 ## Comando para rodar localmente
-python3 -m streamlit run app.py
+# 1. Ativar o ambiente virtual - source .venv/bin/activate
+# 2. Rodar o Streamlit - python -m streamlit run app.py
+# 3. Parar o servidor - CTRL + C
+# 4. Sair do ambiente virtual - deactivate
 -------------------------
-
-
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 ## IDEIAS NOVAS 

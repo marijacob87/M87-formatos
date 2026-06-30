@@ -18,22 +18,22 @@ paginas = {
     ],
 
     "CALCULADORAS": [
-        st.Page("tools/2_calculadoras/calculadora_formatos.py", title="🟢 FORMATOS (MONTAGENS)", default=True),
-        st.Page("tools/2_calculadoras/peso_papel.py", title="🟢 PESO DE PAPEL"),
-        st.Page("tools/2_calculadoras/area_m2.py", title="🟢 ÁREA EM M²"),
-        st.Page("tools/2_calculadoras/preco_papel.py", title="🟢 PREÇO DO PAPEL"),
+        st.Page("tools/2_calculadoras/calculadora_formatos.py", title="● FORMATOS (MONTAGENS)", default=True),
+        st.Page("tools/2_calculadoras/peso_papel.py", title="● PESO DE PAPEL"),
+        st.Page("tools/2_calculadoras/area_m2.py", title="● ÁREA EM M²"),
+        st.Page("tools/2_calculadoras/preco_papel.py", title="● PREÇO DO PAPEL"),
     ],
 
     "CHECKLISTS": [
-        st.Page("tools/3_checklists/checklist_pre_impressao.py", title="🟢 PRÉ-IMPRESSÃO"),
+        st.Page("tools/3_checklists/checklist_pre_impressao.py", title="● PRÉ-IMPRESSÃO"),
         st.Page("tools/3_checklists/checklist_saida_producao.py", title=" SAÍDA PARA PRODUÇÃO"),
         st.Page("tools/3_checklists/checklist_pfi.py", title=" CORTE / VINCO / PFI"),
     ],
 
     "FERRAMENTAS": [
-        st.Page("tools/4_ferramentas/biblioteca_formatos.py", title="🟢 FORMATOS"),
-        st.Page("tools/4_ferramentas/info_pdf.py", title="🟢 INFO PDF"),
-        st.Page("tools/4_ferramentas/barcodegenerator.py", title="🟢 EAN13 e QRCODE"),
+        st.Page("tools/4_ferramentas/biblioteca_formatos.py", title="● FORMATOS"),
+        st.Page("tools/4_ferramentas/info_pdf.py", title="● INFO PDF"),
+        st.Page("tools/4_ferramentas/barcodegenerator.py", title="● EAN13 e QRCODE"),
     ],
 }
 
