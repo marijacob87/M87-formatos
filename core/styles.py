@@ -67,14 +67,16 @@ def carregar_css():
             letter-spacing: 1.8px !important;
             text-transform: uppercase !important;
             color: rgba(255,255,255,0.76) !important;
-            line-height: 1.35 !important;
+            line-height: 1.8 !important;
             text-decoration: none !important;
         }}
 
         section[data-testid="stSidebar"] a {{
             border-radius: 10px !important;
-            padding: 6px 12px 6px 20px !important;
-            margin-bottom: 4px !important;
+            padding: 8px 12px 8px 20px !important;
+            margin-bottom: 5px !important;
+            display: flex !important;
+            align-items: center !important;
             transition: all 0.18s ease !important;
         }}
 
