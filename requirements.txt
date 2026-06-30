@@ -2,3 +2,8 @@ streamlit
 matplotlib
 pillow
 reportlab
+pymupdf
+pikepdf
+opencv-python-headless
+pyzbar
+segno
