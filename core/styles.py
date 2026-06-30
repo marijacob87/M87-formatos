@@ -13,6 +13,7 @@ def carregar_css():
             color: #35e66b !important;
             font-size: 8px !important;
             margin-right: 8px !important;
+            
             text-shadow: 0 0 8px rgba(53,230,107,0.75);
 
         }}
@@ -48,7 +49,7 @@ def carregar_css():
 
         section[data-testid="stSidebar"] [data-testid="stSidebarNav"] div[role="heading"],
         section[data-testid="stSidebar"] [data-testid="stSidebarNav"] p {{
-            font-size: 9px !important;
+            font-size: 10px !important;
             font-weight: 700 !important;
             letter-spacing: 1.5px !important;
             text-transform: uppercase !important;
