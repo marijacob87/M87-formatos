@@ -335,7 +335,7 @@ def gerar_ean13_png(
         x_bloco_esquerdo = x_inicio_barras + ((3 + 42 / 2) * geo["modulo_mm"])
         x_bloco_direito = x_inicio_barras + ((50 + 42 / 2) * geo["modulo_mm"])
 
-        y = int(round((geo["y_texto"] - geo["tamanho_fonte"]) * px_por_mm))
+        y = int(round((geo["y_texto"] - geo["tamanho_fonte"]+1) * px_por_mm))
 
         for texto, x_mm in [
             (codigo[0], x_primeiro),
@@ -423,8 +423,8 @@ tab_ean, tab_qr, tab_reader = st.tabs(
 with tab_ean:
     
     codigo_ean = st.text_input(
-        "Digite 12 ou 13 dígitos para gerar o preview",
-        placeholder="Ex.: 590123412345",
+        "Ao digitar 12 dígitos, o 13º será calculado automaticamente",
+        
         max_chars=13,
         key="ean_codigo"
     ).strip()
